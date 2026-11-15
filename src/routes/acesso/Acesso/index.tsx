@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
 import CampoAcesso from '../../../components/CampoAcesso/CampoAcesso'
 import LayoutAcesso from '../../../components/LayoutAcesso/LayoutAcesso'
+import { useSessao } from '../../../components/SessaoProvider/sessao'
 import { ApiError } from '../../../services/apiClient'
 import { autenticacaoService } from '../../../services/autenticacaoService'
 
@@ -13,6 +14,7 @@ export default function Acesso() {
   const requisicao = useRef<AbortController | null>(null)
   const navigate = useNavigate()
   const { state } = useLocation()
+  const { definirSessao } = useSessao()
 
   useEffect(() => {
     return () => requisicao.current?.abort()
@@ -31,9 +33,10 @@ export default function Acesso() {
     setEntrando(true)
 
     try {
-      const perfil = await autenticacaoService.validarCredenciais({ email, senha }, controle.signal)
+      const conta = await autenticacaoService.entrar({ email, senha }, controle.signal)
       if (!controle.signal.aborted) {
-        await navigate(perfil === 'PACIENTE' ? '/paciente' : '/equipe', { replace: true })
+        definirSessao(conta)
+        await navigate(conta.perfil === 'PACIENTE' ? '/paciente' : '/equipe', { replace: true })
       }
     } catch (falha) {
       if (controle.signal.aborted) return

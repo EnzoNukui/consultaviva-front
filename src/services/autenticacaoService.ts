@@ -1,22 +1,43 @@
-import type { Credenciais, Perfil } from '../types/autenticacao'
+import type { ContaAutenticada, Credenciais, Sessao } from '../types/autenticacao'
 import { agendamentoService } from './agendamentoService'
-import { ApiError } from './apiClient'
+import { ApiError, apiRequest } from './apiClient'
 import { membroEquipeService } from './membroEquipeService'
 
 export const autenticacaoService = {
-  async validarCredenciais(credenciais: Credenciais, signal?: AbortSignal): Promise<Perfil> {
-    const opcoes = { credenciais, signal }
+  async entrar(credenciais: Credenciais, signal?: AbortSignal): Promise<Sessao> {
+    const opcoes = { autorizacao: credenciais, signal }
 
-    // A listagem do próprio paciente é exclusiva desse perfil e pode retornar uma lista vazia.
+    try {
+      const conta = await apiRequest<(ContaAutenticada & { token: string }) | undefined>('/autenticacao/sessao', {
+        ...opcoes, method: 'POST',
+      })
+      if (conta && (conta.perfil === 'PACIENTE' || conta.perfil === 'EQUIPE') && typeof conta.token === 'string' && conta.token) {
+        const { perfil, primeiroNome, token } = conta
+        return { perfil, primeiroNome, autorizacao: { token } }
+      }
+    } catch (erro) {
+      if (signal?.aborted) throw erro
+    }
+
+    // A API publicada pode ainda não emitir tokens. Valida as credenciais nas rotas de perfil.
     try {
       await agendamentoService.listarDoPaciente(opcoes)
-      return 'PACIENTE'
+      return { perfil: 'PACIENTE', autorizacao: credenciais }
     } catch (erro) {
       if (!(erro instanceof ApiError) || erro.status !== 403) throw erro
     }
 
-    // Confirma o perfil da equipe em uma rota exclusiva antes de liberar o painel.
     await membroEquipeService.listar(opcoes)
-    return 'EQUIPE'
+    return { perfil: 'EQUIPE', autorizacao: credenciais }
+  },
+
+  async restaurar(token: string, signal?: AbortSignal): Promise<Sessao> {
+    const autorizacao = { token }
+    const conta = await apiRequest<ContaAutenticada>('/autenticacao/me', { autorizacao, signal })
+    return { ...conta, autorizacao }
+  },
+
+  sair(token: string) {
+    return apiRequest<void>('/autenticacao/sessao', { autorizacao: { token }, method: 'DELETE', keepalive: true })
   },
 }

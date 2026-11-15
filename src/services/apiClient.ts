@@ -1,10 +1,10 @@
-import type { Credenciais } from '../types/autenticacao'
+import type { Autorizacao, Credenciais } from '../types/autenticacao'
 
 const API_URL = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '')
 const TEMPO_LIMITE_JAVA_MS = 240_000
 
 interface OpcoesRequisicao extends RequestInit {
-  credenciais?: Credenciais
+  autorizacao?: Autorizacao
 }
 
 export class ApiError extends Error {
@@ -46,7 +46,7 @@ function mensagemDeErro(detalhes: unknown, status: number): string {
 
 export async function apiRequest<T>(
   caminho: `/${string}`,
-  { credenciais, signal, ...init }: OpcoesRequisicao = {},
+  { autorizacao, signal, ...init }: OpcoesRequisicao = {},
 ): Promise<T> {
   if (!API_URL) throw new Error('Defina VITE_API_URL para conectar à API da ConsultaViva.')
 
@@ -55,7 +55,9 @@ export async function apiRequest<T>(
   if (init.body != null && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
-  if (credenciais) headers.set('Authorization', autorizacaoBasic(credenciais))
+  if (autorizacao) {
+    headers.set('Authorization', 'token' in autorizacao ? `Bearer ${autorizacao.token}` : autorizacaoBasic(autorizacao))
+  }
 
   const cache = (init.method ?? 'GET').toUpperCase() === 'GET' ? init.cache ?? 'no-store' : init.cache
   return executarFetch<T>(`${API_URL}${caminho}`, { ...init, headers, signal, cache }, TEMPO_LIMITE_JAVA_MS)
