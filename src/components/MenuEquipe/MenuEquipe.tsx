@@ -1,7 +1,8 @@
 import { useId, useRef, useState } from 'react'
-import { FiArrowUpRight, FiCalendar, FiClock, FiGrid, FiInbox, FiMapPin, FiMenu, FiShuffle, FiUsers, FiX } from 'react-icons/fi'
+import { FiCalendar, FiClock, FiGrid, FiInbox, FiLogOut, FiMapPin, FiMenu, FiShuffle, FiUsers, FiX } from 'react-icons/fi'
 import { Link, NavLink } from 'react-router-dom'
 import simbolo from '../../assets/marca/simbolo-original.png'
+import { useSessao } from '../SessaoProvider/sessao'
 
 const grupos = [
   {
@@ -32,6 +33,7 @@ const grupos = [
 ]
 
 export default function MenuEquipe() {
+  const { sair } = useSessao()
   const [aberto, setAberto] = useState(false)
   const menuId = useId()
   const botaoMenu = useRef<HTMLButtonElement>(null)
@@ -103,13 +105,14 @@ export default function MenuEquipe() {
           ))}
         </div>
         <div className="mt-auto pt-5">
-          <Link
-            to="/"
-            className="flex min-h-11 items-center justify-between gap-2 border-t border-superficie/15 px-3 text-body-small text-superficie/80 underline-offset-4 hover:text-superficie hover:underline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ciano"
+          <button
+            type="button"
+            onClick={sair}
+            className="flex min-h-11 w-full cursor-pointer items-center gap-3 border-t border-superficie/15 px-3 text-body-small text-superficie/80 hover:text-superficie focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ciano"
           >
-            Voltar ao site
-            <FiArrowUpRight className="size-4 shrink-0" aria-hidden="true" />
-          </Link>
+            <FiLogOut className="size-4 shrink-0" aria-hidden="true" />
+            Sair
+          </button>
         </div>
       </nav>
     </div>
