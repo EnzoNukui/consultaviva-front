@@ -12,4 +12,5 @@ export interface Agendamento {
 }
 
 export type CriarAgendamentoRequest = Pick<Agendamento, 'modalidade' | 'idPaciente' | 'idHorario'>
+export type AgendarConsultaPacienteRequest = Pick<Agendamento, 'idHorario'> & { idUnidade: number }
 export type RemarcarAgendamentoRequest = Pick<Agendamento, 'idHorario'>

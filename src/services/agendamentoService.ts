@@ -1,4 +1,4 @@
-import type { Agendamento, CriarAgendamentoRequest, RemarcarAgendamentoRequest, RespostaAgendamento } from '../types/agendamento'
+import type { Agendamento, AgendarConsultaPacienteRequest, CriarAgendamentoRequest, RemarcarAgendamentoRequest, RespostaAgendamento } from '../types/agendamento'
 import type { OpcoesAutenticadas } from '../types/autenticacao'
 import { apiJsonBody, apiRequest } from './apiClient'
 
@@ -8,6 +8,9 @@ export const agendamentoService = {
 
   listarDoPaciente: (opcoes: OpcoesAutenticadas) =>
     apiRequest<Agendamento[]>('/agendamentos/paciente', opcoes),
+
+  agendarPeloPaciente: (dados: AgendarConsultaPacienteRequest, opcoes: OpcoesAutenticadas) =>
+    apiRequest<Agendamento>('/agendamentos/paciente', { ...opcoes, method: 'POST', body: apiJsonBody(dados) }),
 
   buscarPorId: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
     apiRequest<Agendamento>(`/agendamentos/${idAgendamento}`, opcoes),
