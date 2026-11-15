@@ -91,12 +91,8 @@ const router = createBrowserRouter([
         lazy: carregar(() => import("./paciente/DetalhesSolicitacao")),
       },
       {
-        path: "/paciente/propostas",
-        lazy: carregar(() => import("./paciente/PropostasPaciente")),
-      },
-      {
-        path: "/paciente/preparo-virtual",
-        lazy: carregar(() => import("./paciente/PreparoVirtual")),
+        path: "/paciente/ajuda",
+        lazy: carregar(() => import("./paciente/AjudaPaciente")),
       },
     ],
   },

@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
-import { FiArrowLeft, FiMapPin } from 'react-icons/fi'
+import { FiArrowLeft, FiClock, FiMapPin, FiVideo } from 'react-icons/fi'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import AcoesConsultaPaciente from '../../../components/AcoesConsultaPaciente/AcoesConsultaPaciente'
-import CardConsulta from '../../../components/CardConsulta/CardConsulta'
+import { estadoDaConsulta } from '../../../components/CardConsulta/estadoDaConsulta'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -10,8 +10,14 @@ import { agoraNaAgenda, agendaPacienteService } from '../../../services/agendaPa
 import { ApiError } from '../../../services/apiClient'
 import type { Agendamento } from '../../../types/agendamento'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
-import { listarSolicitacoesDosAgendamentos, solicitacaoAtiva } from '../SolicitacoesPaciente/dadosSolicitacoes'
+import { listarSolicitacoesDoAgendamento, solicitacaoAtiva } from '../SolicitacoesPaciente/dadosSolicitacoes'
 import { useBuscaPaciente } from '../useBuscaPaciente'
+import PlanoDaConsulta from './PlanoDaConsulta'
+
+const formatoDia = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day: '2-digit' })
+const formatoMes = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', month: 'long', year: 'numeric' })
+const formatoSemana = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', weekday: 'long' })
+const formatoHora = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
 
 export default function DetalhesConsulta() {
   const { id } = useParams()
@@ -31,11 +37,14 @@ export default function DetalhesConsulta() {
   const buscarPedido = useCallback(async (opcoes: OpcoesAutenticadas) => {
     if (!consultaCarregada || consultaCarregada.agendamento.statusAgendamento !== 'AGENDADO'
       || consultaCarregada.inicio <= agoraNaAgenda()) return null
-    const pedidos = await listarSolicitacoesDosAgendamentos([consultaCarregada.agendamento], opcoes)
+    const pedidos = await listarSolicitacoesDoAgendamento(consultaCarregada.agendamento.idAgendamento, opcoes)
     return pedidos.find(solicitacaoAtiva) ?? null
   }, [consultaCarregada])
   const { resultado: resultadoPedido } = useBuscaPaciente(buscarPedido)
   const pedido = resultadoPedido?.status === 'sucesso' ? resultadoPedido.dados : null
+  const estado = consulta ? estadoDaConsulta(consulta.agendamento) : null
+  const virtual = consulta?.agendamento.modalidade === 'VIRTUAL'
+  const futura = !!consulta && consulta.agendamento.statusAgendamento === 'AGENDADO' && consulta.inicio > agoraNaAgenda()
   const indisponivel = resultado?.status === 'erro' && resultado.erro instanceof ApiError
     && (resultado.erro.status === 403 || resultado.erro.status === 404)
 
@@ -62,26 +71,56 @@ export default function DetalhesConsulta() {
       ) : resultado.status === 'erro' ? (
         <ErrorState mensagem="Não foi possível carregar esta consulta." tentarNovamente={tentarNovamente} />
       ) : consulta && (
-        <>
-          <CardConsulta consulta={consulta} unidade={consulta.unidade}>
-            {consulta.unidade?.endereco && (
-              <div className="flex items-start gap-2 py-1 text-body-small">
-                <FiMapPin aria-hidden="true" className="mt-1 size-4 shrink-0 text-turquesa-escuro" />
-                <div>
-                  <h3 className="font-bold">Endereço</h3>
-                  <p className="wrap-break-word">{consulta.unidade.endereco}</p>
-                </div>
+        <div className="space-y-6">
+          <section aria-labelledby="resumo-da-consulta" className="grid overflow-hidden rounded-xl border border-azul-profundo/15 bg-superficie sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <time dateTime={consulta.horario.dataInicio} className="flex flex-wrap items-center gap-x-4 gap-y-1 bg-azul-profundo px-5 py-4 text-superficie sm:flex-col sm:items-start sm:justify-center sm:gap-1 sm:px-6 sm:py-7">
+              <span className="text-5xl leading-none font-bold tabular-nums tracking-tight text-ciano sm:text-6xl">{formatoDia.format(consulta.inicio)}</span>
+              <span className="flex flex-col">
+                <span className="font-bold first-letter:uppercase">{formatoSemana.format(consulta.inicio)}</span>
+                <span className="text-body-small text-superficie/85">{formatoMes.format(consulta.inicio)}</span>
+              </span>
+            </time>
+            <div className="min-w-0 space-y-4 p-5 sm:px-7 sm:py-6">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <h2 id="resumo-da-consulta" className="text-h3">{virtual ? 'Consulta virtual' : 'Consulta presencial'}</h2>
+                {estado && (
+                  <p className={`rounded-md px-2.5 py-1 text-caption font-semibold ${estado.cor}`}>{estado.texto}</p>
+                )}
               </div>
-            )}
-          </CardConsulta>
-          {(pedido || (consulta.agendamento.statusAgendamento === 'AGENDADO' && consulta.inicio > agoraNaAgenda())) && (
-            <section aria-labelledby="acoes-da-consulta" className="mt-4 rounded-lg border border-azul-profundo/15 bg-superficie p-4 sm:p-5">
-              <h2 id="acoes-da-consulta" className="mb-2 text-h4">{pedido ? 'Pedido de ajuda em andamento' : 'Ações para esta consulta'}</h2>
+              <dl className="space-y-3">
+                <div className="flex items-start gap-2.5">
+                  <FiClock aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-turquesa-escuro" />
+                  <div>
+                    <dt className="text-caption text-azul-profundo/75">Horário</dt>
+                    <dd className="font-bold"><time dateTime={consulta.horario.dataInicio}>{formatoHora.format(consulta.inicio)}</time></dd>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  {virtual
+                    ? <FiVideo aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-turquesa-escuro" />
+                    : <FiMapPin aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-turquesa-escuro" />}
+                  <div className="min-w-0">
+                    <dt className="text-caption text-azul-profundo/75">Local</dt>
+                    <dd className="font-bold wrap-break-word">{virtual ? 'On-line' : consulta.unidade?.nomeUnidade ?? 'Unidade não informada'}</dd>
+                    {consulta.unidade?.endereco && <dd className="text-body-small text-azul-profundo/80 wrap-break-word">{consulta.unidade.endereco}</dd>}
+                  </div>
+                </div>
+              </dl>
+            </div>
+          </section>
+
+          {futura && (
+            <section aria-labelledby="acoes-da-consulta" className="border-b border-azul-profundo/15 pb-6">
+              <h2 id="acoes-da-consulta" className="mb-3 text-h4">{pedido ? 'Pedido de ajuda em andamento' : 'Você vai conseguir ir?'}</h2>
               {pedido && <p className="mb-3 text-body-small text-azul-profundo/80">Acompanhe o andamento e as alternativas da equipe.</p>}
               <AcoesConsultaPaciente key={consulta.agendamento.idAgendamento} consulta={consulta} pedido={pedido} aoConfirmar={atualizarResposta} />
             </section>
           )}
-        </>
+          {futura && !virtual && resultadoPedido !== null && (
+            <PlanoDaConsulta key={consulta.agendamento.idAgendamento} idAgendamento={consulta.agendamento.idAgendamento}
+              inicioConsulta={consulta.inicio} endereco={consulta.unidade?.endereco} />
+          )}
+        </div>
       )}
     </>
   )

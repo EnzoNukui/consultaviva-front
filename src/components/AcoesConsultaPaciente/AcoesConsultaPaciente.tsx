@@ -80,7 +80,7 @@ export default function AcoesConsultaPaciente({ consulta, pedido, detalhes, aoCo
             variante={pedido ? 'primario' : 'contornoTurquesa'} desabilitado={enviando}
             para={pedido
               ? `/paciente/solicitacoes/${pedido.idSolicitacao}`
-              : `/paciente/solicitacoes?agendamento=${agendamento.idAgendamento}`} />
+              : `/paciente/ajuda?consulta=${agendamento.idAgendamento}`} />
         )}
         {detalhes && <Botoes texto="Ver detalhes" variante="discreto" para={detalhes} icone={FiChevronRight} posicaoIcone="direita" desabilitado={enviando} />}
       </div>

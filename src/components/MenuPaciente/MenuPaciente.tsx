@@ -1,11 +1,11 @@
-import { FiCalendar, FiClipboard, FiHome, FiVideo } from 'react-icons/fi'
+import { FiCalendar, FiClipboard, FiHelpCircle, FiHome } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 
 const links = [
   { texto: 'Início', caminho: '/paciente', Icone: FiHome },
   { texto: 'Consultas', caminho: '/paciente/consultas', Icone: FiCalendar },
   { texto: 'Solicitações', caminho: '/paciente/solicitacoes', Icone: FiClipboard },
-  { texto: 'Preparo virtual', caminho: '/paciente/preparo-virtual', Icone: FiVideo },
+  { texto: 'Precisa de ajuda?', caminho: '/paciente/ajuda', Icone: FiHelpCircle },
 ]
 
 export default function MenuPaciente({ aoNavegar }: { aoNavegar?: () => void }) {
