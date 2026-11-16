@@ -1,32 +1,14 @@
 import type { ReactNode } from 'react'
 import { FiHome, FiVideo } from 'react-icons/fi'
 import type { ConsultaComHorario } from '../../services/agendaPacienteService'
-import type { Agendamento } from '../../types/agendamento'
 import type { Unidade } from '../../types/unidade'
+import { estadoDaConsulta } from './estadoDaConsulta'
 
 const formatoData = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', dateStyle: 'long' })
 const formatoDataCurta = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', dateStyle: 'short' })
 const formatoHora = new Intl.DateTimeFormat('pt-BR', {
   timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
 })
-
-const estados: Record<string, { texto: string; cor: string }> = {
-  AGENDADO: { texto: 'Agendada', cor: 'bg-menta text-turquesa-escuro' },
-  SEM_RESPOSTA: { texto: 'Aguardando sua resposta', cor: 'bg-areia text-azul-profundo' },
-  VOU_COMPARECER: { texto: 'Presença confirmada', cor: 'bg-menta text-turquesa-escuro' },
-  PRECISO_DE_AJUDA: { texto: 'Você informou que precisa de ajuda', cor: 'bg-areia text-azul-profundo' },
-  NAO_CONSIGO_COMPARECER: { texto: 'Você informou que não poderá ir', cor: 'bg-areia text-azul-profundo' },
-  REALIZADO: { texto: 'Realizada', cor: 'bg-menta text-turquesa-escuro' },
-  CANCELADO: { texto: 'Cancelada', cor: 'bg-critico/10 text-critico' },
-  FALTOU: { texto: 'Não compareceu', cor: 'bg-areia text-azul-profundo' },
-}
-
-function estadoDaConsulta(agendamento: Agendamento) {
-  if (agendamento.statusAgendamento === 'AGENDADO') {
-    return estados[agendamento.statusRespostaPaciente] ?? estados.AGENDADO
-  }
-  return estados[agendamento.statusAgendamento]
-}
 
 interface CardConsultaProps {
   consulta: ConsultaComHorario

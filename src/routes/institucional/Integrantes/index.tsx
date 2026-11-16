@@ -12,7 +12,7 @@ const integrantes = [
   {
     nome: 'Arthur Carvalho Brito Martins',
     rm: '572325',
-    turma: '1TDSPH',
+    turma: '1TDSPO',
     foto: fotoArthur,
     github: 'https://github.com/arthurmartinss',
     linkedin: 'https://www.linkedin.com/in/arthur-martinss/',

@@ -1,3 +1,5 @@
+import ListaResgateEquipe from '../ListaResgateEquipe'
+
 export default function SolicitacoesEquipe() {
-  return null
+  return <ListaResgateEquipe aba="solicitacoes" />
 }

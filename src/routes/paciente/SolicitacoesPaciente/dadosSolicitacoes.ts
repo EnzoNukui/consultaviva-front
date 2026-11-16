@@ -20,15 +20,19 @@ export function solicitacaoAtiva({ statusSolicitacao }: SolicitacaoAjuda) {
   return statusSolicitacao === 'ABERTA' || statusSolicitacao === 'EM_ANALISE'
 }
 
+export function listarSolicitacoesDoAgendamento(idAgendamento: number, opcoes: OpcoesAutenticadas) {
+  return solicitacaoService.listarPorAgendamento(idAgendamento, opcoes).catch((erro: unknown) => {
+    if (erro instanceof ApiError && erro.status === 404) return []
+    throw erro
+  })
+}
+
 export async function listarSolicitacoesDosAgendamentos(agendamentos: Agendamento[], opcoes: OpcoesAutenticadas) {
   const solicitacoes: SolicitacaoAjuda[] = []
 
   for (const { idAgendamento } of agendamentos) {
     opcoes.signal?.throwIfAborted()
-    const pedidos = await solicitacaoService.listarPorAgendamento(idAgendamento, opcoes).catch((erro: unknown) => {
-      if (erro instanceof ApiError && erro.status === 404) return []
-      throw erro
-    })
+    const pedidos = await listarSolicitacoesDoAgendamento(idAgendamento, opcoes)
     solicitacoes.push(...pedidos)
   }
 
