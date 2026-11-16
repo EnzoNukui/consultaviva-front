@@ -1,10 +1,13 @@
 import { useId, useRef, useState } from 'react'
-import { FiCalendar, FiClock, FiGrid, FiInbox, FiLogOut, FiMapPin, FiMenu, FiShuffle, FiUsers, FiX } from 'react-icons/fi'
-import { Link, NavLink } from 'react-router-dom'
+import type { IconType } from 'react-icons'
+import { FiCalendar, FiClock, FiGrid, FiLogOut, FiMenu, FiShuffle, FiUsers, FiX } from 'react-icons/fi'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import simbolo from '../../assets/marca/simbolo-original.png'
 import { useSessao } from '../SessaoProvider/sessao'
 
-const grupos = [
+type LinkEquipe = { texto: string; caminho: string; caminhoSecundario?: string; Icone: IconType }
+
+const grupos: { titulo: string; links: LinkEquipe[] }[] = [
   {
     titulo: '',
     links: [{ texto: 'Visão geral', caminho: '/equipe', Icone: FiGrid }],
@@ -17,23 +20,17 @@ const grupos = [
     ],
   },
   {
-    titulo: 'Motor de Resgate',
+    titulo: '',
     links: [
-      { texto: 'Solicitações', caminho: '/equipe/solicitacoes', Icone: FiInbox },
-      { texto: 'Propostas', caminho: '/equipe/propostas', Icone: FiShuffle },
-    ],
-  },
-  {
-    titulo: 'Cadastros',
-    links: [
-      { texto: 'Pacientes', caminho: '/equipe/pacientes', Icone: FiUsers },
-      { texto: 'Unidades', caminho: '/equipe/unidades', Icone: FiMapPin },
+      { texto: 'Motor de Resgate', caminho: '/equipe/solicitacoes', caminhoSecundario: '/equipe/propostas', Icone: FiShuffle },
+      { texto: 'Cadastros', caminho: '/equipe/pacientes', caminhoSecundario: '/equipe/unidades', Icone: FiUsers },
     ],
   },
 ]
 
 export default function MenuEquipe() {
   const { sair } = useSessao()
+  const { pathname } = useLocation()
   const [aberto, setAberto] = useState(false)
   const menuId = useId()
   const botaoMenu = useRef<HTMLButtonElement>(null)
@@ -84,13 +81,13 @@ export default function MenuEquipe() {
       >
         <div className="space-y-4">
           {grupos.map(({ titulo, links }) => (
-            <div key={titulo}>
+            <div key={links[0].caminho}>
               {titulo && <p className="mb-1 px-3 text-caption font-semibold text-superficie/75">{titulo}</p>}
               <ul aria-label={titulo || undefined} className="space-y-0.5">
-                {links.map(({ texto, caminho, Icone }) => (
+                {links.map(({ texto, caminho, caminhoSecundario, Icone }) => (
                   <li key={caminho}>
                     <NavLink
-                      to={caminho}
+                      to={caminhoSecundario && pathname === caminhoSecundario ? caminhoSecundario : caminho}
                       end={caminho === '/equipe'}
                       onClick={fecharMenu}
                       className="group flex min-h-11 items-center gap-3 rounded-lg border-l-2 border-transparent px-3 text-body-small font-medium text-superficie/85 hover:bg-superficie/10 hover:text-superficie focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ciano aria-[current=page]:border-ciano aria-[current=page]:bg-turquesa/15 aria-[current=page]:font-bold aria-[current=page]:text-superficie"

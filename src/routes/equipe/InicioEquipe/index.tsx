@@ -243,10 +243,14 @@ function SolicitacaoNaFila({ item, iniciando, aoIniciar }: {
             <dd className="text-azul-profundo/80 wrap-break-word whitespace-pre-wrap">{pedido.relato?.trim() || 'O paciente não deixou um relato.'}</dd>
           </div>
         </dl>
-        {grupo === 'abertas' && (consultaAtiva
-          ? <Botoes texto="Iniciar análise" onClick={() => aoIniciar(item)} carregando={iniciando === pedido.idSolicitacao}
-            desabilitado={iniciando !== null && iniciando !== pedido.idSolicitacao} />
-          : <p className="text-body-small text-azul-profundo/80">A consulta precisa estar agendada e em um horário futuro para iniciar a análise.</p>)}
+        <div className="flex flex-wrap items-center gap-2">
+          {grupo === 'abertas' && consultaAtiva && (
+            <Botoes texto="Iniciar análise" onClick={() => aoIniciar(item)} carregando={iniciando === pedido.idSolicitacao}
+              desabilitado={iniciando !== null && iniciando !== pedido.idSolicitacao} />
+          )}
+          <Botoes texto="Abrir solicitação" variante="secundario" para={`/equipe/solicitacoes/${pedido.idSolicitacao}`} />
+        </div>
+        {grupo === 'abertas' && !consultaAtiva && <p className="text-body-small text-azul-profundo/80">A consulta precisa estar agendada e em um horário futuro para iniciar a análise.</p>}
       </div>
     </details>
   )

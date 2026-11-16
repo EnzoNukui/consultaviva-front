@@ -27,7 +27,7 @@ export function useOperacaoAgendaEquipe() {
         return
       }
       setErro(falha instanceof ApiError && falha.status < 500 ? falha.message
-        : 'Não foi possível confirmar a operação. Confira a agenda antes de tentar novamente.')
+        : 'Não foi possível confirmar a operação. Atualize a tela para conferir o resultado antes de tentar novamente.')
     } finally {
       requisicao.current = null
       if (!controle.signal.aborted) setOcupado(false)
