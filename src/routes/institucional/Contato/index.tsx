@@ -3,11 +3,13 @@ import type { SubmitEvent } from 'react'
 import { IoSend } from "react-icons/io5";
 import { Link } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const estiloCampo = 'w-full rounded-xl border border-azul-profundo/15 bg-fundo px-4 py-3 text-base focus:border-turquesa-escuro focus:outline-2 focus:outline-offset-2 focus:outline-turquesa-escuro'
 const estiloRotulo = 'block text-sm font-bold'
 
 export default function Contato() {
+  useTituloPagina('Contato')
   const [feedback, setFeedback] = useState('')
 
   async function copiarMensagem(evento: SubmitEvent<HTMLFormElement>) {

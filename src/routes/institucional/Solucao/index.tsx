@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FiArrowDown, FiArrowRight } from 'react-icons/fi'
 import simbolo from '../../../assets/marca/simbolo-original.png'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const etapas = [
   { titulo: 'Confirmar', descricao: 'Avise se vai comparecer ou se encontrou alguma dificuldade.' },
@@ -87,6 +88,7 @@ const larguraSecao = 'mx-auto w-full max-w-7xl px-5 sm:px-8'
 const espacoSecao = 'py-16 sm:py-20 lg:py-26'
 
 export default function Solucao() {
+  useTituloPagina('Solução')
   const [cenario, setCenario] = useState(cenarios[0])
   const foto = `https://images.pexels.com/photos/${cenario.foto}/pexels-photo-${cenario.foto}.jpeg?auto=compress&cs=tinysrgb`
 

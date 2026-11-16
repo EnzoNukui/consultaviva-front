@@ -1,5 +1,6 @@
 import Accordion from '../../../components/Accordion/Accordion'
 import Botoes from '../../../components/Botoes/Botoes'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const perguntas = [
   {
@@ -50,6 +51,8 @@ const perguntas = [
 ]
 
 export default function Faq() {
+  useTituloPagina('Perguntas frequentes')
+
   return (
     <section aria-labelledby="titulo-faq" className="bg-fundo">
       <div className="mx-auto grid w-full max-w-7xl items-start gap-9 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.3fr)] lg:gap-14 lg:pt-[5.5rem] lg:pb-26 xl:w-5/6 xl:px-0">

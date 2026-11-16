@@ -1,6 +1,7 @@
 import { FiRefreshCw } from 'react-icons/fi'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import Botoes from '../../components/Botoes/Botoes'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // O errorElement também recebe falhas de renderização e de carregamento das
 // páginas lazy (por exemplo, um chunk antigo depois de um novo deploy). Nesses
@@ -8,6 +9,7 @@ import Botoes from '../../components/Botoes/Botoes'
 export default function PaginaErro() {
   const erro = useRouteError()
   const naoEncontrada = isRouteErrorResponse(erro) && erro.status === 404
+  useTituloPagina(naoEncontrada ? 'Página não encontrada' : 'Erro')
 
   return (
     <section className="mx-auto max-w-7xl space-y-4 px-5 py-16 sm:px-8">
