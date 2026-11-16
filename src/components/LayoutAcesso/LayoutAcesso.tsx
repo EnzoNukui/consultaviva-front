@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { FiArrowLeft } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import logo from '../../assets/marca/logo-horizontal-original.png'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 interface LayoutAcessoProps {
   titulo: string
@@ -12,6 +13,7 @@ interface LayoutAcessoProps {
 }
 
 export default function LayoutAcesso({ titulo, descricao, children, apoio, amplo = false }: LayoutAcessoProps) {
+  useTituloPagina(titulo)
   const larguraFormulario = amplo ? 'max-w-[34.375rem]' : 'max-w-md'
 
   return (

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { FiArrowLeft } from 'react-icons/fi'
 import { Navigate, useParams } from 'react-router-dom'
 import fotoArthur from '../../../assets/integrantes/foto_arthur.jpeg'
@@ -7,6 +6,7 @@ import fotoEnzo from '../../../assets/integrantes/foto_enzo.jpeg'
 import fotoLeticia from '../../../assets/integrantes/foto_leticia_cardoso.jpeg'
 import Botoes from '../../../components/Botoes/Botoes'
 import CardIntegrantes from '../../../components/CardIntegrantes/CardIntegrantes'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const integrantes = [
   {
@@ -55,14 +55,7 @@ export default function Integrantes() {
   const integrante = integrantes.find((pessoa) => pessoa.rm === rm)
   const titulo = integrante?.nome ?? 'Integrantes'
 
-  useEffect(() => {
-    const tituloAnterior = document.title
-    document.title = `${titulo} | ConsultaViva`
-
-    return () => {
-      document.title = tituloAnterior
-    }
-  }, [titulo])
+  useTituloPagina(titulo)
 
   if (rm && !integrante) {
     return <Navigate to="/integrantes" replace />

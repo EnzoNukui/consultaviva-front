@@ -1,4 +1,5 @@
 import { FiArrowDown } from 'react-icons/fi'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const etapas = [
   {
@@ -103,6 +104,8 @@ const secaoTelaInteira =
   'mx-auto grid min-h-[calc(100svh-5rem-1px)] max-w-7xl content-center px-5 sm:px-8'
 
 export default function Sobre() {
+  useTituloPagina('Sobre')
+
   return (
     <>
       <section aria-labelledby="titulo-sobre" className="bg-menta">

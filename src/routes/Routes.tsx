@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import Error from "./Error";
+import PaginaErro from "./Error";
 import Home from "./institucional/Home";
 
 export const linksInstitucionais = [
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <Error />,
+    errorElement: <PaginaErro />,
     children: [
       {
         path: "/",
@@ -58,17 +58,17 @@ const router = createBrowserRouter([
   {
     path: "/acesso",
     lazy: carregar(() => import("./acesso/Acesso")),
-    errorElement: <Error />,
+    errorElement: <PaginaErro />,
   },
   {
     path: "/cadastro",
     lazy: carregar(() => import("./acesso/CadastroPaciente")),
-    errorElement: <Error />,
+    errorElement: <PaginaErro />,
   },
   {
     path: "/paciente",
     lazy: carregar(() => import("../components/LayoutPaciente/LayoutPaciente")),
-    errorElement: <Error />,
+    errorElement: <PaginaErro />,
     children: [
       {
         path: "/paciente",
@@ -99,7 +99,7 @@ const router = createBrowserRouter([
   {
     path: "/equipe",
     lazy: carregar(() => import("../components/LayoutEquipe/LayoutEquipe")),
-    errorElement: <Error />,
+    errorElement: <PaginaErro />,
     children: [
       {
         path: "/equipe",

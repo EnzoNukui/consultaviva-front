@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import logo from '../../../assets/marca/logo-horizontal-original.png'
 import Accordion from '../../../components/Accordion/Accordion'
 import Botoes from '../../../components/Botoes/Botoes'
+import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 function fotoPexels(id: number, largura: number) {
   return `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${largura}`
@@ -75,6 +76,8 @@ const duvidas = [
 ]
 
 export default function Home() {
+  useTituloPagina()
+
   return (
     <>
       <section
