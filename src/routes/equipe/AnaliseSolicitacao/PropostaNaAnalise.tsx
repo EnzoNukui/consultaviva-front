@@ -53,6 +53,11 @@ export default function PropostaNaAnalise({ proposta, horario, unidade, podeAnal
         {unidade && <p className="flex items-center gap-2 wrap-break-word"><FiMapPin className="shrink-0 text-turquesa-escuro" aria-hidden="true" />{unidade}</p>}
       </div>
       <p className="my-3 text-body-small wrap-break-word whitespace-pre-wrap">{proposta.justificativa}</p>
+      {emAnalise && podeAnalisar && proposta.tipoAlternativa === 'MANUTENCAO' && (
+        <p className="mb-3 rounded-md bg-areia px-3 py-2 text-body-small">
+          Esta opção mantém o horário e a modalidade originais. Confira se a dificuldade relatada já foi resolvida antes de enviar.
+        </p>
+      )}
       <dl className="grid gap-3 text-body-small sm:grid-cols-3">
         <div><dt className="font-bold">Autorização</dt><dd>{autorizacoes[proposta.statusAutorizacao]}</dd></div>
         <div><dt className="font-bold">Resposta do paciente</dt><dd>{respostas[proposta.statusAceitePaciente]}</dd></div>

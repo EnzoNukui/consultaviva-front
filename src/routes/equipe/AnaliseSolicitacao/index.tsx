@@ -9,6 +9,7 @@ import LoadingState from '../../../components/LoadingState/LoadingState'
 import { useBuscaAutenticada } from '../../../hooks/useBuscaAutenticada'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import { propostaService } from '../../../services/propostaService'
+import { ofertaVigente } from '../../../services/propostasDoPaciente'
 import { solicitacaoService } from '../../../services/solicitacaoService'
 import type { PropostaAtendimento } from '../../../types/proposta'
 import { campoAgenda, DialogoAgendaEquipe } from '../ControlesAgendaEquipe'
@@ -29,6 +30,7 @@ export default function AnaliseSolicitacao() {
   const { erro, setErro, ocupado, executar } = useOperacaoAgendaEquipe()
   const [selecao, setSelecao] = useState<Selecao | null>(null)
   const [mensagem, setMensagem] = useState('')
+  const [filtroAlternativas, setFiltroAlternativas] = useState<'todas' | 'remarcar' | 'virtual'>('todas')
   const [agora, setAgora] = useState(agoraNaAgenda)
 
   const dados = resultado?.status === 'sucesso' ? resultado.dados : null
@@ -40,7 +42,18 @@ export default function AnaliseSolicitacao() {
   const emAnalise = pedido?.statusSolicitacao === 'EM_ANALISE'
   const paciente = agendamento && (dados?.pacientes.get(agendamento.idPaciente) ?? `Paciente #${agendamento.idPaciente}`)
   const propostas = dados?.propostas.filter((item) => item.idSolicitacao === idPedido)
-    .toSorted((a, b) => Number(confirmavel(b, agora)) - Number(confirmavel(a, agora)) || b.idProposta - a.idProposta) ?? []
+    .toSorted((a, b) => prioridade(a) - prioridade(b) || inicioProposto(a).localeCompare(inicioProposto(b))
+      || a.idProposta - b.idProposta) ?? []
+  const propostasVisiveis = propostas.filter((proposta) => filtroAlternativas === 'todas'
+    || (filtroAlternativas === 'virtual' ? proposta.modalidade === 'VIRTUAL'
+      : proposta.tipoAlternativa === 'REMARCACAO' || proposta.tipoAlternativa === 'REMARCACAO_CONVERSAO'))
+  const alteracoesViaveis = propostas.some((proposta) => ['EM_ANALISE', 'OFERTADA'].includes(proposta.statusProposta)
+    && proposta.tipoAlternativa !== 'MANUTENCAO' && proposta.statusAutorizacao !== 'NEGADA'
+    && timestampDaAgenda(dados?.horarios.get(proposta.idHorario)?.dataInicio ?? '') > agora
+    && (proposta.statusProposta !== 'OFERTADA' || ofertaVigente(proposta, agora)))
+  const destinoAgenda = horario ? `/equipe/horarios?${new URLSearchParams({
+    unidade: String(horario.idUnidade), profissional: String(horario.idMembroEquipe), dia: horario.dataInicio.slice(0, 10),
+  })}` : '/equipe/horarios'
 
   useEffect(() => {
     const relogio = window.setInterval(() => setAgora(agoraNaAgenda()), 30_000)
@@ -54,6 +67,18 @@ export default function AnaliseSolicitacao() {
 
   function confirmavel(proposta: PropostaAtendimento, instante: number) {
     return !!pedido && podeConfirmarProposta(proposta, pedido, agendamento, horario, dados?.horarios.get(proposta.idHorario), instante)
+  }
+
+  function inicioProposto(proposta: PropostaAtendimento) {
+    return dados?.horarios.get(proposta.idHorario)?.dataInicio ?? ''
+  }
+
+  function prioridade(proposta: PropostaAtendimento) {
+    if (confirmavel(proposta, agora)) return 0
+    if (proposta.statusProposta === 'OFERTADA' && ofertaVigente(proposta, agora)) return 1
+    const inicio = inicioProposto(proposta)
+    if (proposta.statusProposta !== 'EM_ANALISE' || !inicio || timestampDaAgenda(inicio) <= agora) return 4
+    return proposta.tipoAlternativa === 'MANUTENCAO' ? 3 : 2
   }
 
   function abrir(acao: Selecao) {
@@ -100,7 +125,7 @@ export default function AnaliseSolicitacao() {
       if (tipo === 'gerar') {
         const geradas = await propostaService.gerar(idPedido, opcoes)
         if (!Array.isArray(geradas)) throw new Error('A API não confirmou a geração.')
-        return geradas.length === 0 ? 'Nenhuma nova alternativa compatível foi encontrada.'
+        return geradas.length === 0 ? 'Nenhuma nova alternativa compatível foi encontrada. A solicitação continua em análise.'
           : geradas.length === 1 ? 'Uma nova proposta foi gerada.' : `${geradas.length} novas propostas foram geradas.`
       }
       if (tipo === 'iniciar' || tipo === 'semSolucao' || tipo === 'cancelarPedido') {
@@ -188,7 +213,7 @@ export default function AnaliseSolicitacao() {
               <div className="min-w-0 text-body-small">
                 <h3 className="mb-1 font-bold">Relato do paciente</h3>
                 <p className="wrap-break-word whitespace-pre-wrap">{pedido.relato?.trim() || 'O paciente não deixou um relato.'}</p>
-                {emAnalise && <p className="mt-3 text-azul-profundo/75">O motor usa as dificuldades e disponibilidades registradas pelo paciente para encontrar alternativas. A leitura desses detalhes está disponível no portal do paciente.</p>}
+                {emAnalise && <p className="mt-3 text-azul-profundo/75">Use o relato para avaliar se outro horário ou um atendimento virtual resolve a dificuldade. As opções geradas respeitam as janelas que o paciente informou.</p>}
               </div>
             </div>
             {(aberta || emAnalise) && (
@@ -197,18 +222,37 @@ export default function AnaliseSolicitacao() {
                 <div className="flex flex-wrap gap-2">
                   {aberta && consultaAtiva && <Botoes texto="Iniciar análise" onClick={() => abrir({ tipo: 'iniciar' })} />}
                   {emAnalise && consultaAtiva && <Botoes texto="Gerar propostas" icone={FiShuffle} onClick={() => abrir({ tipo: 'gerar' })} />}
-                  {emAnalise && <Botoes texto="Encerrar sem solução" variante="secundario" onClick={() => abrir({ tipo: 'semSolucao' })} />}
-                  <Botoes texto="Cancelar solicitação" variante="discreto" onClick={() => abrir({ tipo: 'cancelarPedido' })} />
                 </div>
               </div>
             )}
           </section>
           <section aria-labelledby="titulo-alternativas">
-            <h2 id="titulo-alternativas" className="mb-3 text-h3">Alternativas para a consulta</h2>
+            <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+              <h2 id="titulo-alternativas" className="text-h3">Alternativas para a consulta</h2>
+              {propostas.length > 0 && (
+                <label className="min-w-0 text-body-small font-bold">Mostrar
+                  <select className={campoAgenda} value={filtroAlternativas} onChange={(evento) => {
+                    const filtro = evento.target.value
+                    setFiltroAlternativas(filtro === 'remarcar' || filtro === 'virtual' ? filtro : 'todas')
+                  }}>
+                    <option value="todas">Todas as alternativas</option>
+                    <option value="remarcar">Com novo horário</option>
+                    <option value="virtual">Com atendimento virtual</option>
+                  </select>
+                </label>
+              )}
+            </div>
+            {emAnalise && consultaAtiva && !alteracoesViaveis && (
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-azul-profundo/15 bg-superficie p-4">
+                <p className="max-w-lg text-body-small">Se as vagas atuais não resolverem o pedido, consulte a agenda ou abra um horário compatível. Depois, volte e gere novas propostas.</p>
+                <Botoes texto="Ver horários do profissional" variante="contornoTurquesa" para={destinoAgenda} />
+              </div>
+            )}
             {propostas.length === 0 ? <EmptyState titulo="Nenhuma alternativa registrada" mensagem={aberta
-              ? 'Inicie a análise para que o motor possa buscar alternativas.' : 'As propostas geradas para esta solicitação aparecerão aqui.'} /> : (
+              ? 'Inicie a análise para que o motor possa buscar alternativas.' : 'As propostas geradas para esta solicitação aparecerão aqui.'} />
+              : propostasVisiveis.length === 0 ? <EmptyState titulo="Nenhuma alternativa desse tipo" mensagem="Selecione outro filtro para ver as opções já geradas." /> : (
               <div className="grid gap-4">
-                {propostas.map((proposta) => {
+                {propostasVisiveis.map((proposta) => {
                   const candidato = dados?.horarios.get(proposta.idHorario)
                   return <PropostaNaAnalise key={proposta.idProposta} proposta={proposta} horario={candidato}
                     unidade={candidato && dados?.unidades.get(candidato.idUnidade)} agora={agora} podeConfirmar={confirmavel(proposta, agora)}
@@ -217,6 +261,16 @@ export default function AnaliseSolicitacao() {
               </div>
             )}
           </section>
+          {(aberta || emAnalise) && (
+            <details className="mt-6 rounded-xl border border-azul-profundo/15 bg-superficie px-4 py-3 text-body-small">
+              <summary className="min-h-8 w-fit cursor-pointer font-bold text-turquesa-escuro">Encerramento do pedido</summary>
+              <p className="mb-3 text-azul-profundo/75">Use quando o pedido precisar ser cancelado ou quando as alternativas viáveis tiverem sido avaliadas.</p>
+              <div className="flex flex-wrap gap-2">
+                {emAnalise && <Botoes texto="Encerrar sem solução" variante="secundario" onClick={() => abrir({ tipo: 'semSolucao' })} />}
+                <Botoes texto="Cancelar solicitação" variante="discreto" onClick={() => abrir({ tipo: 'cancelarPedido' })} />
+              </div>
+            </details>
+          )}
         </>
       )}
       {selecao && pedido && (
