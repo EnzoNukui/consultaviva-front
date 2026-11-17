@@ -285,8 +285,7 @@ npm run build
 consultaviva-front/
 ├── docs/
 │   └── images/
-│       ├── telas/            # Prints reais da aplicação
-│       └── equipe/           # Miniaturas da equipe usadas no README
+│       └── telas/            # Prints reais da aplicação
 ├── public/                   # Recursos públicos e favicon
 ├── src/
 │   ├── assets/               # Logo, fotos originais e imagens do site
@@ -324,19 +323,19 @@ Desenvolvido por estudantes da **FIAP** para a **Global Solution 2026/2**.
 <table>
   <tr>
     <td align="center" width="33%" valign="top">
-      <img src="docs/images/equipe/arthur.jpg" alt="Arthur Carvalho Brito Martins" width="150" /><br/>
+      <img src="src/assets/integrantes/foto_arthur.jpeg" alt="Arthur Carvalho Brito Martins" width="150" /><br/>
       <strong>Arthur Carvalho Brito Martins</strong><br/>
       <sub>RM 572325 · 1TDSPO</sub><br/>
       <a href="https://github.com/arthurmartinss">GitHub</a> · <a href="https://www.linkedin.com/in/arthur-martinss/">LinkedIn</a>
     </td>
     <td align="center" width="33%" valign="top">
-      <img src="docs/images/equipe/diego.jpg" alt="Diego Soares Trujillo" width="150" /><br/>
+      <img src="src/assets/integrantes/foto_diego.jpg" alt="Diego Soares Trujillo" width="150" /><br/>
       <strong>Diego Soares Trujillo</strong><br/>
       <sub>RM 570147 · 1TDSPH</sub><br/>
       <a href="https://github.com/diegotrujillo011">GitHub</a> · <a href="https://www.linkedin.com/in/diego-trujillo-3441b9380/">LinkedIn</a>
     </td>
     <td align="center" width="33%" valign="top">
-      <img src="docs/images/equipe/eduardo.jpg" alt="Eduardo Damasio Guelere" width="150" /><br/>
+      <img src="src/assets/integrantes/foto_eduardo.jpg" alt="Eduardo Damasio Guelere" width="150" /><br/>
       <strong>Eduardo Damasio Guelere</strong><br/>
       <sub>RM 569960 · 1TDSPH</sub><br/>
       <a href="https://github.com/Eduardoguelere">GitHub</a> · <a href="https://www.linkedin.com/in/eduardo-guelere-0902753b8/">LinkedIn</a>
@@ -344,13 +343,13 @@ Desenvolvido por estudantes da **FIAP** para a **Global Solution 2026/2**.
   </tr>
   <tr>
     <td align="center" valign="top">
-      <img src="docs/images/equipe/enzo.jpg" alt="Enzo Nukui da Silva" width="150" /><br/>
+      <img src="src/assets/integrantes/foto_enzo.jpeg" alt="Enzo Nukui da Silva" width="150" /><br/>
       <strong>Enzo Nukui da Silva</strong><br/>
       <sub>RM 569770 · 1TDSPH</sub><br/>
       <a href="https://github.com/EnzoNukui">GitHub</a> · <a href="https://www.linkedin.com/in/enzo-nukui/">LinkedIn</a>
     </td>
     <td align="center" valign="top">
-      <img src="docs/images/equipe/leticia.jpg" alt="Leticia Cardoso de Almeida" width="150" /><br/>
+      <img src="src/assets/integrantes/foto_leticia_cardoso.jpeg" alt="Leticia Cardoso de Almeida" width="150" /><br/>
       <strong>Leticia Cardoso de Almeida</strong><br/>
       <sub>RM 569415 · 1TDSPH</sub><br/>
       <a href="https://github.com/lehalmeidafc0">GitHub</a> · <a href="https://www.linkedin.com/in/let%C3%ADcia-almeida-70b851294/">LinkedIn</a>
