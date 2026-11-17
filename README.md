@@ -85,7 +85,7 @@ As imagens a seguir foram capturadas do site ConsultaViva. Elas mostram a experi
 A Home sintetiza a proposta e orienta o visitante a conhecer a plataforma ou acessar o portal.
 
 <div align="center">
-  <img src="docs/images/telas/home_cv.png" alt="Página inicial da ConsultaViva com chamada da consulta marcada ao atendimento realizado" width="100%" />
+  <img src="docs/home_cv.png" alt="Página inicial da ConsultaViva com chamada da consulta marcada ao atendimento realizado" width="100%" />
 </div>
 
 ### 02 · Contexto e desenvolvimento da ideia
@@ -96,11 +96,11 @@ A página **Sobre** apresenta o problema e o percurso de investigação da equip
   <tr>
     <td width="50%" align="center" valign="top">
       <strong>Por que uma consulta marcada pode não acontecer?</strong><br/><br/>
-      <img src="docs/images/telas/sobre_cv.png" alt="Página Sobre: explicação do problema da ausência em consultas" width="100%" />
+      <img src="docs/sobre_cv.png" alt="Página Sobre: explicação do problema da ausência em consultas" width="100%" />
     </td>
     <td width="50%" align="center" valign="top">
       <strong>Como chegamos à solução</strong><br/><br/>
-      <img src="docs/images/telas/sobre2_cv.png" alt="Página Sobre: etapas do desenvolvimento da proposta" width="100%" />
+      <img src="docs/sobre2_cv.png" alt="Página Sobre: etapas do desenvolvimento da proposta" width="100%" />
     </td>
   </tr>
 </table>
@@ -113,11 +113,11 @@ A página **Solução** explica as etapas do atendimento e apresenta os cenário
   <tr>
     <td width="50%" align="center" valign="top">
       <strong>Do agendamento ao atendimento</strong><br/><br/>
-      <img src="docs/images/telas/solucao_cv.png" alt="Etapas de confirmação, preparo, ajuda e avaliação da proposta" width="100%" />
+      <img src="docs/solucao_cv.png" alt="Etapas de confirmação, preparo, ajuda e avaliação da proposta" width="100%" />
     </td>
     <td width="50%" align="center" valign="top">
       <strong>Motor de Resgate na prática</strong><br/><br/>
-      <img src="docs/images/telas/solucao2_cv.png" alt="Exemplo fictício do Motor de Resgate com alternativa de horário" width="100%" />
+      <img src="docs/solucao2_cv.png" alt="Exemplo fictício do Motor de Resgate com alternativa de horário" width="100%" />
     </td>
   </tr>
 </table>
@@ -127,7 +127,7 @@ A página **Solução** explica as etapas do atendimento e apresenta os cenário
 A página de integrantes reúne os cinco estudantes, suas identificações acadêmicas e seus perfis profissionais.
 
 <div align="center">
-  <img src="docs/images/telas/integrantes_cv.png" alt="Página de integrantes da ConsultaViva com os cinco membros da equipe" width="100%" />
+  <img src="docs/integrantes_cv.png" alt="Página de integrantes da ConsultaViva com os cinco membros da equipe" width="100%" />
 </div>
 
 ### 05 · Informação e contato
@@ -138,11 +138,11 @@ As páginas de FAQ e Contato ajudam visitantes e avaliadores a entender o protó
   <tr>
     <td width="50%" align="center" valign="top">
       <strong>Perguntas frequentes</strong><br/><br/>
-      <img src="docs/images/telas/faq_cv.png" alt="FAQ da ConsultaViva com perguntas frequentes" width="100%" />
+      <img src="docs/faq_cv.png" alt="FAQ da ConsultaViva com perguntas frequentes" width="100%" />
     </td>
     <td width="50%" align="center" valign="top">
       <strong>Fale com a equipe</strong><br/><br/>
-      <img src="docs/images/telas/contato_cv.png" alt="Página de contato com campos de identificação e mensagem" width="100%" />
+      <img src="docs/contato_cv.png" alt="Página de contato com campos de identificação e mensagem" width="100%" />
     </td>
   </tr>
 </table>
@@ -283,9 +283,7 @@ npm run build
 
 ```text
 consultaviva-front/
-├── docs/
-│   └── images/
-│       └── telas/            # Prints reais da aplicação
+├── docs/                     # Prints reais da aplicação
 ├── public/                   # Recursos públicos e favicon
 ├── src/
 │   ├── assets/               # Logo, fotos originais e imagens do site
