@@ -25,28 +25,6 @@ export type CriarPlanoRequest = AtualizarPlanoRequest & {
   idProposta?: number | null
 }
 
-export interface PreparoVirtual {
-  idPreparo: number
-  dataVerificacao: LocalDateTime
-  statusPermissaoMicrofone: string
-  statusPermissaoCamera: string
-  statusCamera: string
-  statusMicrofone: string
-  statusConexao: string
-  observacao: string | null
-  idAgendamento: number
-  idProposta: number | null
-}
-
-export type AtualizarPreparoRequest = Pick<
-  PreparoVirtual, 'statusPermissaoMicrofone' | 'statusPermissaoCamera' | 'statusCamera' | 'statusMicrofone' | 'statusConexao'
-> & { observacao?: string | null }
-
-export type CriarPreparoRequest = AtualizarPreparoRequest & {
-  idAgendamento: number
-  idProposta?: number | null
-}
-
 export interface HistoricoEvento {
   idEvento: number
   dataEvento: LocalDateTime
@@ -57,18 +35,4 @@ export interface HistoricoEvento {
   idSolicitacao: number | null
   idProposta: number | null
   idMembroEquipe: number | null
-}
-
-export interface SincronizacaoAgenda {
-  idSincronizacao: number
-  nomeProvedor: string
-  idAgendaExterna: string | null
-  idEventoExterno: string | null
-  tipoOperacao: string
-  statusSincronizacao: string
-  numeroTentativas: number
-  dataUltimaTentativa: LocalDateTime | null
-  dataUltimoSucesso: LocalDateTime | null
-  ultimoErro: string | null
-  idAgendamento: number
 }

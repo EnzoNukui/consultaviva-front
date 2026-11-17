@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { FiCalendar, FiCheck, FiChevronLeft, FiChevronRight, FiClock, FiPlus } from 'react-icons/fi'
+import { FiCalendar, FiChevronLeft, FiChevronRight, FiClock, FiPlus } from 'react-icons/fi'
 import { useSearchParams } from 'react-router-dom'
+import AvisoOperacao from '../../../components/AvisoOperacao/AvisoOperacao'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario from '../../../components/CampoFormulario/CampoFormulario'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -10,9 +12,10 @@ import { useBuscaAutenticada } from '../../../hooks/useBuscaAutenticada'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import { horarioService } from '../../../services/horarioService'
 import type { CriarHorarioRequest, HorarioAtendimento } from '../../../types/horario'
-import { campoAgenda, DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
+import { DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
 import { carregarHorariosEquipe, formatarDataAgenda, formatarHoraAgenda, hojeNaAgenda, inicioDaSemana, somarDias } from '../dadosAgendaEquipe'
 import { useOperacaoAgendaEquipe } from '../useOperacaoAgendaEquipe'
+import CamposLocalHorario from './CamposLocalHorario'
 import FormularioHorariosEmLote from './FormularioHorariosEmLote'
 import { cadastrarHorariosEmLote, conflitaComHorario } from './horariosEmLote'
 
@@ -150,10 +153,8 @@ export default function HorariosEquipe() {
           </div>
         )}
       </header>
-      {mensagem && <p role="status" className="mb-4 flex items-center gap-2 rounded-lg bg-menta px-4 py-2.5 text-body-small font-bold text-turquesa-escuro">
-        <FiCheck aria-hidden="true" className="shrink-0" /> {mensagem}
-      </p>}
-      {aviso && <p role="alert" className="mb-4 rounded-lg bg-areia px-4 py-2.5 text-body-small">{aviso}</p>}
+      <AvisoOperacao mensagem={mensagem} />
+      <AvisoOperacao mensagem={aviso} tipo="aviso" />
 
       {resultado === null && <LoadingState mensagem="Carregando horários da equipe…" />}
       {resultado?.status === 'erro' && <ErrorState mensagem="Não foi possível carregar os horários." tentarNovamente={tentarNovamente} />}
@@ -251,32 +252,15 @@ export default function HorariosEquipe() {
           ) : (
             <form onSubmit={salvar}>
               <fieldset disabled={ocupado} className="grid min-w-0 gap-3 sm:grid-cols-2">
-                <label className="min-w-0 text-body-small font-bold">Unidade
-                  <select name="unidade" required className={campoAgenda} defaultValue={horarioSelecionado?.idUnidade ?? unidade}>
-                    <option value="">Selecione a unidade</option>
-                    {dados.unidades.map((item) => <option key={item.idUnidade} value={item.idUnidade}>{item.nomeUnidade}</option>)}
-                  </select>
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Profissional
-                  <select name="profissional" required className={campoAgenda} defaultValue={horarioSelecionado?.idMembroEquipe ?? profissional}>
-                    <option value="">Selecione o profissional</option>
-                    {membros.map((item) => <option key={item.idMembroEquipe} value={item.idMembroEquipe}>{item.nomeMembroEquipe}</option>)}
-                  </select>
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Data de início
-                  <input name="dataInicio" type="date" required defaultValue={horarioSelecionado?.dataInicio.slice(0, 10) ?? dia} className={campoAgenda} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Data de término (se for outro dia)
-                  <input name="dataFim" type="date" className={campoAgenda}
-                    defaultValue={horarioSelecionado && horarioSelecionado.dataInicio.slice(0, 10) !== horarioSelecionado.dataFim.slice(0, 10)
-                      ? horarioSelecionado.dataFim.slice(0, 10) : ''} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Início
-                  <input name="horaInicio" type="time" step={1} required defaultValue={horarioSelecionado?.dataInicio.slice(11, 19)} className={campoAgenda} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Fim
-                  <input name="horaFim" type="time" step={1} required defaultValue={horarioSelecionado?.dataFim.slice(11, 19)} className={campoAgenda} />
-                </label>
+                <CamposLocalHorario unidades={dados.unidades} profissionais={membros}
+                  unidade={horarioSelecionado?.idUnidade ?? unidade} profissional={horarioSelecionado?.idMembroEquipe ?? profissional} />
+                <CampoFormulario rotulo="Data de início" name="dataInicio" type="date" required
+                  defaultValue={horarioSelecionado?.dataInicio.slice(0, 10) ?? dia} />
+                <CampoFormulario rotulo="Data de término (se for outro dia)" name="dataFim" type="date"
+                  defaultValue={horarioSelecionado && horarioSelecionado.dataInicio.slice(0, 10) !== horarioSelecionado.dataFim.slice(0, 10)
+                    ? horarioSelecionado.dataFim.slice(0, 10) : ''} />
+                <CampoFormulario rotulo="Início" name="horaInicio" type="time" step={1} required defaultValue={horarioSelecionado?.dataInicio.slice(11, 19)} />
+                <CampoFormulario rotulo="Fim" name="horaFim" type="time" step={1} required defaultValue={horarioSelecionado?.dataFim.slice(11, 19)} />
               </fieldset>
               <div className="mt-5 flex flex-wrap justify-end gap-2">
                 <Botoes texto="Voltar" variante="secundario" desabilitado={ocupado} onClick={() => setAcao(null)} />

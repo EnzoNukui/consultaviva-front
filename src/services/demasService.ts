@@ -2,8 +2,6 @@ import type {
   EstabelecimentoDemas,
   FiltrosEstabelecimentos,
   PaginacaoDemas,
-  TipoUnidadeDemas,
-  UbsDemas,
 } from '../types/demas'
 import { executarFetch } from './apiClient'
 
@@ -19,9 +17,9 @@ function consultar<T>(caminho: string, signal?: AbortSignal) {
   }, TEMPO_LIMITE_DEMAS_MS)
 }
 
-function paginacao({ limit = 20, offset = 0 }: PaginacaoDemas, maximo: number) {
-  if (!Number.isSafeInteger(limit) || limit < 1 || limit > maximo) {
-    throw new RangeError(`O limite por página deve ser um inteiro entre 1 e ${maximo}.`)
+function paginacao({ limit = 20, offset = 0 }: PaginacaoDemas) {
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 20) {
+    throw new RangeError('O limite por página deve ser um inteiro entre 1 e 20.')
   }
   if (!Number.isSafeInteger(offset) || offset < 0) {
     throw new RangeError('O índice da página deve ser um inteiro a partir de zero.')
@@ -44,7 +42,7 @@ export const demasService = {
     }: FiltrosEstabelecimentos = {},
     signal?: AbortSignal,
   ): Promise<EstabelecimentoDemas[]> {
-    const parametros = paginacao({ limit, offset }, 20)
+    const parametros = paginacao({ limit, offset })
     const filtros = {
       codigo_tipo_unidade,
       codigo_uf,
@@ -65,17 +63,4 @@ export const demasService = {
 
   buscarPorCnes: (codigoCnes: string | number, signal?: AbortSignal) =>
     consultar<EstabelecimentoDemas>(`/cnes/estabelecimentos/${encodeURIComponent(codigoCnes)}`, signal),
-
-  async listarTiposUnidade(signal?: AbortSignal): Promise<TipoUnidadeDemas[]> {
-    const resposta = await consultar<{ tipos_unidade: TipoUnidadeDemas[] }>('/cnes/tipounidades', signal)
-    return resposta.tipos_unidade
-  },
-
-  async listarUbs(opcoes: PaginacaoDemas = {}, signal?: AbortSignal): Promise<UbsDemas[]> {
-    const parametros = paginacao(opcoes, 1000)
-    const resposta = await consultar<{ ubs: UbsDemas[] }>(
-      `/assistencia-a-saude/unidade-basicas-de-saude?${parametros}`, signal,
-    )
-    return resposta.ubs
-  },
 }

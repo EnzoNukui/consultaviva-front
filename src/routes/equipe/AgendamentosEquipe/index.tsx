@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { FiCalendar, FiCheck, FiChevronDown, FiPlus } from 'react-icons/fi'
+import { FiCalendar, FiChevronDown, FiPlus } from 'react-icons/fi'
+import AvisoOperacao from '../../../components/AvisoOperacao/AvisoOperacao'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario, { classeCampoFormulario } from '../../../components/CampoFormulario/CampoFormulario'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -9,7 +11,7 @@ import { agendamentoService } from '../../../services/agendamentoService'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import type { Agendamento, CriarAgendamentoRequest, StatusAgendamento } from '../../../types/agendamento'
 import type { HorarioAtendimento } from '../../../types/horario'
-import { campoAgenda, DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
+import { DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
 import { carregarAgendamentosEquipe, formatarDataAgenda, formatarHoraAgenda, hojeNaAgenda } from '../dadosAgendaEquipe'
 import { useOperacaoAgendaEquipe } from '../useOperacaoAgendaEquipe'
 import FormularioAgendamento from './FormularioAgendamento'
@@ -132,22 +134,18 @@ export default function AgendamentosEquipe() {
         </div>
         {dados && <Botoes texto="Novo agendamento" icone={FiPlus} desabilitado={!dados.pacientes.length} onClick={() => abrir({ tipo: 'novo' })} />}
       </header>
-      {mensagem && <p role="status" className="mb-4 flex items-center gap-2 rounded-lg bg-menta px-4 py-2.5 text-body-small font-bold text-turquesa-escuro">
-        <FiCheck aria-hidden="true" className="shrink-0" /> {mensagem}
-      </p>}
+      <AvisoOperacao mensagem={mensagem} />
       {resultado === null && <LoadingState mensagem="Carregando os agendamentos…" />}
       {resultado?.status === 'erro' && <ErrorState mensagem="Não foi possível carregar os agendamentos." tentarNovamente={tentarNovamente} />}
       {dados && (
         <>
           <div className="mb-5 rounded-xl border border-azul-profundo/15 bg-superficie p-4">
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <label className="min-w-0 text-body-small font-bold">Data
-                <input type="date" value={data} onChange={(evento) => setData(evento.target.value)} className={campoAgenda} />
-              </label>
+              <CampoFormulario rotulo="Data" type="date" value={data} onChange={(evento) => setData(evento.target.value)} />
               <FiltrosDeLocal unidades={dados.unidades} profissionais={dados.profissionais} unidade={unidade} profissional={profissional}
                 aoFiltrarUnidade={setUnidade} aoFiltrarProfissional={setProfissional} />
               <label className="min-w-0 text-body-small font-bold">Situação
-                <select value={situacao} onChange={(evento) => setSituacao(evento.target.value)} className={campoAgenda}>
+                <select value={situacao} onChange={(evento) => setSituacao(evento.target.value)} className={classeCampoFormulario}>
                   <option value="">Todas as situações</option>
                   {Object.entries(situacoes).map(([id, rotulo]) => <option key={id} value={id}>{rotulo}</option>)}
                 </select>

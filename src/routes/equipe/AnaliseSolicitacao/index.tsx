@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { FiArrowLeft, FiCalendar, FiCheck, FiRefreshCw, FiShuffle } from 'react-icons/fi'
+import { FiArrowLeft, FiCalendar, FiRefreshCw, FiShuffle } from 'react-icons/fi'
 import { useLocation, useParams } from 'react-router-dom'
+import AvisoOperacao from '../../../components/AvisoOperacao/AvisoOperacao'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario, { classeCampoFormulario } from '../../../components/CampoFormulario/CampoFormulario'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -12,7 +14,7 @@ import { propostaService } from '../../../services/propostaService'
 import { ofertaVigente } from '../../../services/propostasDoPaciente'
 import { solicitacaoService } from '../../../services/solicitacaoService'
 import type { PropostaAtendimento } from '../../../types/proposta'
-import { campoAgenda, DialogoAgendaEquipe } from '../ControlesAgendaEquipe'
+import { DialogoAgendaEquipe } from '../ControlesAgendaEquipe'
 import { carregarAnaliseEquipe, consultaPermiteAnalise, podeConfirmarProposta, situacoesSolicitacao, textoDataHora } from '../dadosResgateEquipe'
 import NavegacaoEquipe from '../NavegacaoEquipe'
 import { useOperacaoAgendaEquipe } from '../useOperacaoAgendaEquipe'
@@ -182,7 +184,7 @@ export default function AnaliseSolicitacao() {
         <Botoes texto="Voltar às solicitações" para="/equipe/solicitacoes" icone={FiArrowLeft} variante="secundario" />
         <Botoes texto="Atualizar" variante="secundario" icone={FiRefreshCw} onClick={atualizar} desabilitado={!resultado || ocupado} />
       </div>
-      {mensagem && <p role="status" className="mb-4 flex items-center gap-2 rounded-lg bg-menta px-4 py-2.5 text-body-small font-bold text-turquesa-escuro"><FiCheck aria-hidden="true" />{mensagem}</p>}
+      <AvisoOperacao mensagem={mensagem} />
       {resultado === null && <LoadingState mensagem="Carregando solicitação…" />}
       {resultado?.status === 'erro' && <ErrorState mensagem="Não foi possível carregar a solicitação." tentarNovamente={atualizar} />}
       {dados && !pedido && <EmptyState titulo="Solicitação não encontrada" mensagem="Escolha um pedido na lista de solicitações." />}
@@ -231,7 +233,7 @@ export default function AnaliseSolicitacao() {
               <h2 id="titulo-alternativas" className="text-h3">Alternativas para a consulta</h2>
               {propostas.length > 0 && (
                 <label className="min-w-0 text-body-small font-bold">Mostrar
-                  <select className={campoAgenda} value={filtroAlternativas} onChange={(evento) => {
+                  <select className={classeCampoFormulario} value={filtroAlternativas} onChange={(evento) => {
                     const filtro = evento.target.value
                     setFiltroAlternativas(filtro === 'remarcar' || filtro === 'virtual' ? filtro : 'todas')
                   }}>
@@ -280,13 +282,11 @@ export default function AnaliseSolicitacao() {
             <fieldset className="min-w-0" disabled={ocupado}>
               {selecao.tipo === 'editar' && (
                 <label className="block text-body-small font-bold">Justificativa
-                  <textarea className={campoAgenda} rows={4} name="justificativa" required maxLength={500} defaultValue={alvo?.justificativa} />
+                  <textarea className={classeCampoFormulario} rows={4} name="justificativa" required maxLength={500} defaultValue={alvo?.justificativa} />
                 </label>
               )}
               {selecao.tipo === 'ofertar' && (
-                <label className="block text-body-small font-bold">Prazo de aceite (horário de Brasília)
-                  <input className={campoAgenda} name="prazo" type="datetime-local" required max={maxAceite} />
-                </label>
+                <CampoFormulario rotulo="Prazo de aceite (horário de Brasília)" name="prazo" type="datetime-local" required max={maxAceite} />
               )}
             </fieldset>
             <div className="mt-5 flex flex-wrap justify-end gap-2">

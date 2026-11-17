@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { SubmitEvent } from 'react'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario from '../../../components/CampoFormulario/CampoFormulario'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import type { CriarHorarioRequest, HorarioAtendimento } from '../../../types/horario'
 import type { MembroEquipe } from '../../../types/membroEquipe'
 import type { Unidade } from '../../../types/unidade'
-import { campoAgenda } from '../ControlesAgendaEquipe'
 import { formatarDataAgenda, formatarHoraAgenda, hojeNaAgenda } from '../dadosAgendaEquipe'
+import CamposLocalHorario from './CamposLocalHorario'
 import { conflitaComHorario, montarHorariosEmLote } from './horariosEmLote'
 
 const semana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -58,26 +59,11 @@ export default function FormularioHorariosEmLote({ dia, unidade, profissional, u
   return (
     <form onSubmit={revisar}>
       <fieldset className="grid min-w-0 gap-3 sm:grid-cols-2" disabled={ocupado || !!previa} hidden={!!previa}>
-        <label className="min-w-0 text-body-small font-bold">Unidade
-          <select name="unidade" required className={campoAgenda} defaultValue={unidade}>
-            <option value="">Selecione a unidade</option>
-            {unidades.map((item) => <option key={item.idUnidade} value={item.idUnidade}>{item.nomeUnidade}</option>)}
-          </select>
-        </label>
-        <label className="min-w-0 text-body-small font-bold">Profissional
-          <select name="profissional" required className={campoAgenda} defaultValue={profissional}>
-            <option value="">Selecione o profissional</option>
-            {membros.map((item) => <option key={item.idMembroEquipe} value={item.idMembroEquipe}>{item.nomeMembroEquipe}</option>)}
-          </select>
-        </label>
-        <label className="min-w-0 text-body-small font-bold">A partir de
-          <input type="date" name="inicio" required min={hojeNaAgenda()} value={inicio}
-            className={campoAgenda} onChange={(evento) => setInicio(evento.target.value)} />
-        </label>
-        <label className="min-w-0 text-body-small font-bold">Repetir até (opcional)
-          <input type="date" name="fim" min={inicio} value={ate} className={campoAgenda}
-            onChange={(evento) => setAte(evento.target.value)} />
-        </label>
+        <CamposLocalHorario unidades={unidades} profissionais={membros} unidade={unidade} profissional={profissional} />
+        <CampoFormulario rotulo="A partir de" type="date" name="inicio" required min={hojeNaAgenda()} value={inicio}
+          onChange={(evento) => setInicio(evento.target.value)} />
+        <CampoFormulario rotulo="Repetir até (opcional)" type="date" name="fim" min={inicio} value={ate}
+          onChange={(evento) => setAte(evento.target.value)} />
         {ate && <div className="sm:col-span-2">
           <p id="dias-do-turno" className="text-body-small font-bold">Dias da semana</p>
           <div role="group" aria-labelledby="dias-do-turno" className="mt-2 flex flex-wrap gap-1.5">
@@ -86,15 +72,9 @@ export default function FormularioHorariosEmLote({ dia, unidade, profissional, u
               className="min-h-11 min-w-11 cursor-pointer rounded-lg border border-azul-profundo/25 px-2 text-body-small font-semibold focus-visible:outline-2 focus-visible:outline-turquesa-escuro aria-pressed:border-turquesa-escuro aria-pressed:bg-menta aria-pressed:text-turquesa-escuro">{semana[id]}</button>)}
           </div>
         </div>}
-        <label className="min-w-0 text-body-small font-bold">Início do turno
-          <input type="time" name="abertura" required className={campoAgenda} />
-        </label>
-        <label className="min-w-0 text-body-small font-bold">Fim do turno
-          <input type="time" name="fechamento" required className={campoAgenda} />
-        </label>
-        <label className="min-w-0 text-body-small font-bold">Minutos por consulta
-          <input type="number" name="duracao" required min={1} defaultValue={30} className={campoAgenda} />
-        </label>
+        <CampoFormulario rotulo="Início do turno" type="time" name="abertura" required />
+        <CampoFormulario rotulo="Fim do turno" type="time" name="fechamento" required />
+        <CampoFormulario rotulo="Minutos por consulta" type="number" name="duracao" required min={1} defaultValue={30} />
       </fieldset>
       {previa && (
         <div className="space-y-3 rounded-lg border border-azul-profundo/10 bg-fundo p-3 text-body-small">

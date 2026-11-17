@@ -1,7 +1,8 @@
+import CampoFormulario from '../../../components/CampoFormulario/CampoFormulario'
 import { pacienteService } from '../../../services/pacienteService'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
 import type { Paciente } from '../../../types/paciente'
-import CadastroEquipe, { CampoCadastro } from '../CadastroEquipe'
+import CadastroEquipe from '../CadastroEquipe'
 import { formatarDataAgenda, hojeNaAgenda, listaAgenda, somarDias } from '../dadosAgendaEquipe'
 
 function carregarPacientes(opcoes: OpcoesAutenticadas) {
@@ -11,11 +12,11 @@ function carregarPacientes(opcoes: OpcoesAutenticadas) {
 function camposPaciente(paciente: Paciente | null) {
   return (
     <>
-      <CampoCadastro rotulo="Nome completo" name="nome" defaultValue={paciente?.nomePaciente} required maxLength={100} />
-      <CampoCadastro rotulo="Data de nascimento" name="nascimento" type="date" defaultValue={paciente?.dataNascimento}
+      <CampoFormulario rotulo="Nome completo" name="nome" defaultValue={paciente?.nomePaciente} required maxLength={100} />
+      <CampoFormulario rotulo="Data de nascimento" name="nascimento" type="date" defaultValue={paciente?.dataNascimento}
         required max={somarDias(hojeNaAgenda(), -1)} />
-      <CampoCadastro rotulo="Telefone (opcional)" name="telefone" type="tel" defaultValue={paciente?.telefone ?? ''} maxLength={20} />
-      <CampoCadastro rotulo="E-mail (opcional)" name="email" type="email" defaultValue={paciente?.email ?? ''} maxLength={150} />
+      <CampoFormulario rotulo="Telefone (opcional)" name="telefone" type="tel" defaultValue={paciente?.telefone ?? ''} maxLength={20} />
+      <CampoFormulario rotulo="E-mail (opcional)" name="email" type="email" defaultValue={paciente?.email ?? ''} maxLength={150} />
       <p className="text-body-small text-azul-profundo/75">{paciente?.email
         ? 'Se o campo de e-mail ficar vazio, o endereço atual será mantido.'
         : 'Este cadastro serve para a equipe marcar consultas. Se a pessoa precisar acessar o portal, use a página pública de cadastro.'}</p>

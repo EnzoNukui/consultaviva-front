@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { SubmitEvent } from 'react'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario, { classeCampoFormulario } from '../../../components/CampoFormulario/CampoFormulario'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
 import { useBuscaAutenticada } from '../../../hooks/useBuscaAutenticada'
@@ -11,7 +12,7 @@ import type { OpcoesAutenticadas } from '../../../types/autenticacao'
 import type { MembroEquipe } from '../../../types/membroEquipe'
 import type { Paciente } from '../../../types/paciente'
 import type { Unidade } from '../../../types/unidade'
-import { campoAgenda, FiltrosDeLocal } from '../ControlesAgendaEquipe'
+import { FiltrosDeLocal } from '../ControlesAgendaEquipe'
 import { formatarDataAgenda, formatarHoraAgenda, listaAgenda } from '../dadosAgendaEquipe'
 
 function buscarVagas(opcoes: OpcoesAutenticadas) {
@@ -76,7 +77,7 @@ export default function FormularioAgendamento({ pacientes, unidades, profissiona
         {!remarcando && (
           <>
             <label className="block min-w-0 text-body-small font-bold">Paciente
-              <select name="paciente" className={campoAgenda} required defaultValue="">
+              <select name="paciente" className={classeCampoFormulario} required defaultValue="">
                 <option value="">Selecione o paciente</option>
                 {pacientes.toSorted((a, b) => a.nomePaciente.localeCompare(b.nomePaciente, 'pt-BR')).map((paciente) => (
                   <option key={paciente.idPaciente} value={paciente.idPaciente}>{paciente.nomePaciente} · #{paciente.idPaciente}</option>
@@ -84,7 +85,7 @@ export default function FormularioAgendamento({ pacientes, unidades, profissiona
               </select>
             </label>
             <label className="block min-w-0 text-body-small font-bold">Modalidade
-              <select name="modalidade" className={campoAgenda} defaultValue="PRESENCIAL">
+              <select name="modalidade" className={classeCampoFormulario} defaultValue="PRESENCIAL">
                 <option value="PRESENCIAL">Presencial</option>
                 <option value="VIRTUAL">Virtual</option>
               </select>
@@ -96,9 +97,7 @@ export default function FormularioAgendamento({ pacientes, unidades, profissiona
             Filtrar vagas · {visiveis.length} {visiveis.length === 1 ? 'resultado' : 'resultados'}
           </summary>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="min-w-0 text-body-small font-bold">Data da consulta
-              <input type="date" className={campoAgenda} value={data} onChange={(evento) => setData(evento.target.value)} />
-            </label>
+            <CampoFormulario rotulo="Data da consulta" type="date" value={data} onChange={(evento) => setData(evento.target.value)} />
             <FiltrosDeLocal unidades={unidades} profissionais={profissionais} unidade={unidade} profissional={profissional}
               aoFiltrarUnidade={setUnidade} aoFiltrarProfissional={setProfissional} />
             {(data || unidade || profissional) && <div className="self-end">
@@ -112,7 +111,7 @@ export default function FormularioAgendamento({ pacientes, unidades, profissiona
         </details>
         {!visiveis.length ? <p role="status" className="text-body-small">Altere ou limpe os filtros para encontrar uma vaga.</p> : (
           <label className="block min-w-0 text-body-small font-bold">{remarcando ? 'Novo horário' : 'Horário disponível'}
-            <select key={`${data}/${unidade}/${profissional}`} name="horario" required className={campoAgenda} defaultValue="">
+            <select key={`${data}/${unidade}/${profissional}`} name="horario" required className={classeCampoFormulario} defaultValue="">
               <option value="">Selecione uma vaga</option>
               {visiveis.map((vaga) => (
                 <option key={vaga.idHorario} value={vaga.idHorario}>

@@ -1,17 +1,24 @@
 import { useEffect, useRef } from 'react'
 import { FiLogOut, FiMenu, FiX } from 'react-icons/fi'
-import { Link, Navigate, Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import logo from '../../assets/marca/logo-horizontal-original.png'
-import ErrorState from '../ErrorState/ErrorState'
-import LoadingState from '../LoadingState/LoadingState'
 import MenuPaciente from '../MenuPaciente/MenuPaciente'
+import ProtecaoPortal from '../ProtecaoPortal/ProtecaoPortal'
 import { useSessao } from '../SessaoProvider/sessao'
 
 const larguraConteudo = 'mx-auto w-full max-w-[58rem] px-4 sm:px-5'
 const botaoIcone = 'grid size-11 shrink-0 cursor-pointer place-items-center rounded-md hover:bg-menta focus-visible:outline-2 focus-visible:outline-turquesa-escuro'
 
 export default function LayoutPaciente() {
-  const { sessao, sair, restaurando, erroRestauracao, tentarRestaurar } = useSessao()
+  return (
+    <ProtecaoPortal perfil="PACIENTE" classeCarregamento={`${larguraConteudo} py-8`}>
+      <PortalPaciente />
+    </ProtecaoPortal>
+  )
+}
+
+function PortalPaciente() {
+  const { sair } = useSessao()
   const menu = useRef<HTMLDialogElement>(null)
   const abrirMenu = useRef<HTMLButtonElement>(null)
   const botaoFechar = useRef<HTMLButtonElement>(null)
@@ -24,20 +31,6 @@ export default function LayoutPaciente() {
     larguraDesktop.addEventListener('change', fecharNoDesktop)
     return () => larguraDesktop.removeEventListener('change', fecharNoDesktop)
   }, [])
-
-  if (restaurando || erroRestauracao) {
-    return (
-      <main className={`${larguraConteudo} py-8`}>
-        {restaurando ? (
-          <LoadingState mensagem="Restaurando sua sessão…" />
-        ) : (
-          <ErrorState mensagem="Não foi possível recuperar sua sessão." tentarNovamente={tentarRestaurar} />
-        )}
-      </main>
-    )
-  }
-  if (!sessao) return <Navigate to="/acesso" replace />
-  if (sessao.perfil !== 'PACIENTE') return <Navigate to="/equipe" replace />
 
   function fecharMenu() {
     menu.current?.close()

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiArrowRight, FiRefreshCw, FiSearch } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import Botoes from '../../components/Botoes/Botoes'
+import { classeCampoFormulario } from '../../components/CampoFormulario/CampoFormulario'
 import EmptyState from '../../components/EmptyState/EmptyState'
 import ErrorState from '../../components/ErrorState/ErrorState'
 import LoadingState from '../../components/LoadingState/LoadingState'
@@ -9,8 +10,8 @@ import { useBuscaAutenticada } from '../../hooks/useBuscaAutenticada'
 import { agoraNaAgenda } from '../../services/agendaPacienteService'
 import type { PropostaAtendimento, StatusProposta } from '../../types/proposta'
 import type { StatusSolicitacao } from '../../types/solicitacao'
-import { campoAgenda } from './ControlesAgendaEquipe'
-import { carregarResgateEquipe, descreverProposta, normalizarBusca, podeConfirmarProposta, situacoesProposta, situacoesSolicitacao, textoDataHora, tiposProposta } from './dadosResgateEquipe'
+import normalizarBusca from '../../utils/normalizarBusca'
+import { carregarResgateEquipe, descreverProposta, podeConfirmarProposta, situacoesProposta, situacoesSolicitacao, textoDataHora, tiposProposta } from './dadosResgateEquipe'
 import NavegacaoEquipe from './NavegacaoEquipe'
 
 type RegistroResgate = {
@@ -100,11 +101,11 @@ export default function ListaResgateEquipe({ aba }: { aba: 'solicitacoes' | 'pro
               <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto">
                 <label className="relative min-w-0 flex-1 text-body-small font-bold">Buscar
                   <FiSearch aria-hidden="true" className="pointer-events-none absolute bottom-3.5 left-3 size-4 text-turquesa-escuro" />
-                  <input type="search" className={`${campoAgenda} pl-9 sm:min-w-64`} value={busca} onChange={(evento) => setBusca(evento.target.value)}
+                  <input type="search" className={`${classeCampoFormulario} pl-9 sm:min-w-64`} value={busca} onChange={(evento) => setBusca(evento.target.value)}
                     placeholder="Paciente ou número" />
                 </label>
                 <label className="flex-1 text-body-small font-bold">Situação
-                  <select className={campoAgenda} value={situacao} onChange={(evento) => setSituacao(evento.target.value)}>
+                  <select className={classeCampoFormulario} value={situacao} onChange={(evento) => setSituacao(evento.target.value)}>
                     <option value="">Todas as situações</option>
                     {Object.entries(exibirPropostas ? situacoesProposta : situacoesSolicitacao).map(([id, texto]) => <option key={id} value={id}>{texto}</option>)}
                   </select>

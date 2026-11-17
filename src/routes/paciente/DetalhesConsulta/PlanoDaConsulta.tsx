@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { FiArrowRight, FiClock, FiExternalLink, FiMap, FiMapPin } from 'react-icons/fi'
+import { FiArrowRight, FiClock, FiMap, FiMapPin } from 'react-icons/fi'
 import Botoes from '../../../components/Botoes/Botoes'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -19,7 +19,6 @@ const formatoDia = new Intl.DateTimeFormat('pt-BR', {
   timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 })
 const transportePadrao = 'Ônibus'
-const planejadorSptrans = 'https://www.sptrans.com.br/acompanhe-e-planeje-sua-viagem/'
 const campo = 'mt-1 block min-h-11 w-full rounded-lg border border-azul-profundo/25 bg-superficie px-3 py-2 text-body-small text-azul-profundo focus-visible:outline-2 focus-visible:outline-turquesa-escuro'
 
 interface PlanoDaConsultaProps {
@@ -123,16 +122,7 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
 
   return (
     <section aria-labelledby="titulo-plano" className="min-w-0 pb-4">
-      <h2 id="titulo-plano" className="text-h3">Planejar minha ida</h2>
-      <p className="mt-1 text-body-small text-azul-profundo/80">Consulte o percurso e calcule a hora de sair para chegar com antecedência.</p>
-      <div className="mt-3">
-        <a href={planejadorSptrans} target="_blank" rel="noreferrer"
-          className="inline-flex min-h-11 items-center gap-2 rounded-md text-body-small font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro">
-          Planejar trajeto na SPTrans <FiExternalLink aria-hidden="true" className="size-4 shrink-0" />
-          <span className="sr-only"> (abre em nova aba)</span>
-        </a>
-        <p className="text-caption text-azul-profundo/75">Para viagens de ônibus na cidade de São Paulo.</p>
-      </div>
+      <h3 id="titulo-plano" className="sr-only">Plano de comparecimento</h3>
       {mensagem && <p role={mensagem.erro ? 'alert' : 'status'} className={`mt-3 text-body-small font-semibold ${mensagem.erro ? 'text-critico' : 'text-turquesa-escuro'}`}>{mensagem.texto}</p>}
       {resultado === null && <div className="mt-3"><LoadingState mensagem="Buscando seu plano…" /></div>}
       {resultado?.status === 'erro' && (
@@ -173,7 +163,7 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
             <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
               <p className="max-w-sm text-body-small text-azul-profundo/80">{plano
                 ? 'A consulta mudou. Revise o trajeto para calcular uma nova hora de saída.'
-                : 'Depois de consultar o trajeto, informe a duração para ver a hora de saída.'}</p>
+                : 'Se já souber quanto tempo dura a viagem, use esse valor para calcular a hora de sair.'}</p>
               {!editando && <Botoes texto={plano ? 'Revisar plano' : 'Calcular hora de saída'} icone={FiArrowRight} posicaoIcone="direita" onClick={abrirPlano} />}
             </div>
           )}

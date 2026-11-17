@@ -16,11 +16,6 @@ export interface FiltrosEstabelecimentos extends PaginacaoDemas {
   data_atualizacao?: LocalDate
 }
 
-export interface TipoUnidadeDemas {
-  codigo_tipo_unidade: number
-  descricao_tipo_unidade: string
-}
-
 export interface EstabelecimentoDemas {
   codigo_cnes: number
   codigo_estabelecimento_saude: string
@@ -39,15 +34,4 @@ export interface EstabelecimentoDemas {
   descricao_turno_atendimento: string | null
   codigo_motivo_desabilitacao_estabelecimento: string | null
   data_atualizacao: LocalDate | null
-}
-
-export interface UbsDemas {
-  cnes: string
-  nome: string
-  ibge: string
-  uf: string
-  bairro: string | null
-  logradouro: string | null
-  latitude: string | null
-  longitude: string | null
 }

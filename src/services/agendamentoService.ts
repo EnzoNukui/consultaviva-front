@@ -37,9 +37,6 @@ export const agendamentoService = {
   cancelar: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
     apiRequest<Agendamento>(`/agendamentos/${idAgendamento}/cancelamento`, { ...opcoes, method: 'POST' }),
 
-  cancelarPeloPaciente: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
-    apiRequest<Agendamento>(`/agendamentos/${idAgendamento}/cancelamento-paciente`, { ...opcoes, method: 'POST' }),
-
   registrarRealizacao: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
     apiRequest<Agendamento>(`/agendamentos/${idAgendamento}/realizacao`, { ...opcoes, method: 'POST' }),
 
