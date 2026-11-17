@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import fotoArthur from '../../../assets/integrantes/foto_arthur.jpeg'
 import fotoDiego from '../../../assets/integrantes/foto_diego.jpg'
 import fotoEnzo from '../../../assets/integrantes/foto_enzo.jpeg'
+import fotoEduardo from '../../../assets/integrantes/foto_eduardo.jpg'
 import fotoLeticia from '../../../assets/integrantes/foto_leticia_cardoso.jpeg'
 import Botoes from '../../../components/Botoes/Botoes'
 import CardIntegrantes from '../../../components/CardIntegrantes/CardIntegrantes'
@@ -29,6 +30,7 @@ const integrantes = [
     nome: 'Eduardo Damasio Guelere',
     rm: '569960',
     turma: '1TDSPH',
+    foto: fotoEduardo,
     github: 'https://github.com/Eduardoguelere',
     linkedin: 'https://www.linkedin.com/in/eduardo-guelere-0902753b8/',
   },
