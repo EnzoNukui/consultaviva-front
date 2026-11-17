@@ -39,10 +39,6 @@ export function textoDataHora(data: string) {
   return `${formatarDataAgenda(data)}, ${formatarHoraAgenda(data)}`
 }
 
-export function normalizarBusca(valor: string) {
-  return valor.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
-}
-
 export async function carregarResgateEquipe(opcoes: OpcoesAutenticadas) {
   const solicitacoes = await listaAgenda(solicitacaoService.listar(opcoes))
   const propostas = solicitacoes.length ? await listaAgenda(propostaService.listar(opcoes)) : []

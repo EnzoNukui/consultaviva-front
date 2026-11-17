@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { FiX } from 'react-icons/fi'
+import { classeCampoFormulario } from '../../components/CampoFormulario/CampoFormulario'
 import type { MembroEquipe } from '../../types/membroEquipe'
 import type { Unidade } from '../../types/unidade'
-
-export const campoAgenda = 'mt-1.5 block min-h-11 w-full min-w-0 rounded-lg border border-azul-profundo/25 bg-superficie px-3 py-2 text-body-small font-normal text-azul-profundo focus-visible:outline-2 focus-visible:outline-turquesa-escuro'
 
 export function FiltrosDeLocal({ unidades, profissionais, unidade, profissional, aoFiltrarUnidade, aoFiltrarProfissional }: {
   unidades: Unidade[]
@@ -17,13 +16,13 @@ export function FiltrosDeLocal({ unidades, profissionais, unidade, profissional,
   return (
     <>
       <label className="min-w-0 text-body-small font-bold">Unidade
-        <select className={campoAgenda} value={unidade} onChange={(evento) => aoFiltrarUnidade(evento.target.value)}>
+        <select className={classeCampoFormulario} value={unidade} onChange={(evento) => aoFiltrarUnidade(evento.target.value)}>
           <option value="">Todas as unidades</option>
           {unidades.map(({ idUnidade, nomeUnidade }) => <option key={idUnidade} value={idUnidade}>{nomeUnidade}</option>)}
         </select>
       </label>
       <label className="min-w-0 text-body-small font-bold">Profissional
-        <select className={campoAgenda} value={profissional} onChange={(evento) => aoFiltrarProfissional(evento.target.value)}>
+        <select className={classeCampoFormulario} value={profissional} onChange={(evento) => aoFiltrarProfissional(evento.target.value)}>
           <option value="">Todos os profissionais</option>
           {profissionais.map(({ idMembroEquipe, nomeMembroEquipe }) => <option key={idMembroEquipe} value={idMembroEquipe}>{nomeMembroEquipe}</option>)}
         </select>

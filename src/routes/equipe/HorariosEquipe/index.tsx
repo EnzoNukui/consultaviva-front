@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { FiCheck, FiChevronLeft, FiChevronRight, FiClock, FiPlus } from 'react-icons/fi'
+import { FiCalendar, FiChevronLeft, FiChevronRight, FiClock, FiPlus } from 'react-icons/fi'
+import { useSearchParams } from 'react-router-dom'
+import AvisoOperacao from '../../../components/AvisoOperacao/AvisoOperacao'
 import Botoes from '../../../components/Botoes/Botoes'
+import CampoFormulario from '../../../components/CampoFormulario/CampoFormulario'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -9,22 +12,30 @@ import { useBuscaAutenticada } from '../../../hooks/useBuscaAutenticada'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import { horarioService } from '../../../services/horarioService'
 import type { CriarHorarioRequest, HorarioAtendimento } from '../../../types/horario'
-import { campoAgenda, DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
+import { DialogoAgendaEquipe, FiltrosDeLocal } from '../ControlesAgendaEquipe'
 import { carregarHorariosEquipe, formatarDataAgenda, formatarHoraAgenda, hojeNaAgenda, inicioDaSemana, somarDias } from '../dadosAgendaEquipe'
 import { useOperacaoAgendaEquipe } from '../useOperacaoAgendaEquipe'
+import CamposLocalHorario from './CamposLocalHorario'
+import FormularioHorariosEmLote from './FormularioHorariosEmLote'
+import { cadastrarHorariosEmLote, conflitaComHorario } from './horariosEmLote'
 
 const diaDaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'short', timeZone: 'UTC' })
 const botaoSemana = 'grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg border border-azul-profundo/20 bg-superficie hover:bg-menta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro'
-type Acao = { tipo: 'novo' } | { tipo: 'editar' | 'excluir'; horario: HorarioAtendimento }
+type Acao = { tipo: 'novo' | 'lote' } | { tipo: 'editar' | 'excluir'; horario: HorarioAtendimento }
 
 export default function HorariosEquipe() {
+  const [parametros] = useSearchParams()
+  const dataInicial = parametros.get('dia') ?? ''
   const { resultado, tentarNovamente } = useBuscaAutenticada(carregarHorariosEquipe)
   const { ocupado, erro, setErro, executar } = useOperacaoAgendaEquipe()
-  const [dia, setDia] = useState(hojeNaAgenda)
-  const [unidade, setUnidade] = useState('')
-  const [profissional, setProfissional] = useState('')
+  const [dia, setDia] = useState(() => /^\d{4}-\d{2}-\d{2}$/.test(dataInicial)
+    && Number.isFinite(timestampDaAgenda(`${dataInicial}T00:00:00`)) ? dataInicial : hojeNaAgenda())
+  const [unidade, setUnidade] = useState(parametros.get('unidade') ?? '')
+  const [profissional, setProfissional] = useState(parametros.get('profissional') ?? '')
   const [acao, setAcao] = useState<Acao | null>(null)
   const [mensagem, setMensagem] = useState('')
+  const [aviso, setAviso] = useState('')
+  const [processadas, setProcessadas] = useState(0)
   const dados = resultado?.status === 'sucesso' ? resultado.dados : null
   const membros = dados?.profissionais.filter(({ atendimento }) => atendimento === 'S') ?? []
   const profissionaisPorId = new Map(dados?.profissionais.map((item) => [item.idMembroEquipe, item.nomeMembroEquipe]))
@@ -51,12 +62,31 @@ export default function HorariosEquipe() {
   function abrir(tipo: Acao) {
     setErro('')
     setMensagem('')
+    setAviso('')
     setAcao(tipo)
+  }
+
+  function salvarLote(vagasDoTurno: CriarHorarioRequest[]) {
+    const primeira = vagasDoTurno[0]
+    if (!primeira) return
+    setProcessadas(0)
+    void executar((opcoes) => cadastrarHorariosEmLote(vagasDoTurno, opcoes, setProcessadas), (resumo) => {
+      setAcao(null)
+      setDia(primeira.dataInicio.slice(0, 10))
+      setUnidade(String(primeira.idUnidade))
+      setProfissional(String(primeira.idMembroEquipe))
+      const saldo = `${resumo.criadas} ${resumo.criadas === 1 ? 'vaga cadastrada' : 'vagas cadastradas'}.`
+      const conflitos = resumo.ignoradas ? ` ${resumo.ignoradas} ${resumo.ignoradas === 1 ? 'vaga ignorada' : 'vagas ignoradas'} por conflito ou início já passado.` : ''
+      if (resumo.pendentes) {
+        setAviso(`${saldo}${conflitos} ${resumo.pendentes} sem confirmação. ${resumo.erro} Revise a agenda antes de tentar novamente.`)
+      } else setMensagem(saldo + conflitos)
+      tentarNovamente()
+    })
   }
 
   function salvar(evento: SubmitEvent<HTMLFormElement>) {
     evento.preventDefault()
-    if (!acao || acao.tipo === 'excluir' || !dados) return
+    if (!acao || (acao.tipo !== 'novo' && acao.tipo !== 'editar') || !dados) return
     const formulario = new FormData(evento.currentTarget)
     const dataInicio = String(formulario.get('dataInicio') ?? '')
     const dataFim = String(formulario.get('dataFim') || dataInicio)
@@ -75,9 +105,7 @@ export default function HorariosEquipe() {
       setErro('Selecione a unidade e o profissional. O fim precisa ser depois do início.')
       return
     }
-    if (dados.horarios.some((item) => item.idHorario !== horarioSelecionado?.idHorario
-      && item.idMembroEquipe === registro.idMembroEquipe
-      && timestampDaAgenda(item.dataInicio) < fim && timestampDaAgenda(item.dataFim) > inicio)) {
+    if (dados.horarios.some((item) => item.idHorario !== horarioSelecionado?.idHorario && conflitaComHorario(registro, item))) {
       setErro('O profissional já tem um horário cadastrado nesse intervalo.')
       return
     }
@@ -116,12 +144,17 @@ export default function HorariosEquipe() {
           <h1 className="text-h1">Horários</h1>
           <p className="mt-2 text-body-small text-azul-profundo/80">Organize os intervalos de atendimento por unidade e profissional.</p>
         </div>
-        {dados && <Botoes texto="Cadastrar horário" icone={FiPlus} desabilitado={!dados.unidades.length || !membros.length}
-          onClick={() => abrir({ tipo: 'novo' })} />}
+        {dados && (
+          <div className="flex flex-wrap gap-2">
+            <Botoes texto="Cadastrar horário" variante="secundario" icone={FiPlus} desabilitado={!dados.unidades.length || !membros.length}
+              onClick={() => abrir({ tipo: 'novo' })} />
+            <Botoes texto="Cadastrar por turno" icone={FiCalendar} desabilitado={!dados.unidades.length || !membros.length}
+              onClick={() => abrir({ tipo: 'lote' })} />
+          </div>
+        )}
       </header>
-      {mensagem && <p role="status" className="mb-4 flex items-center gap-2 rounded-lg bg-menta px-4 py-2.5 text-body-small font-bold text-turquesa-escuro">
-        <FiCheck aria-hidden="true" className="shrink-0" /> {mensagem}
-      </p>}
+      <AvisoOperacao mensagem={mensagem} />
+      <AvisoOperacao mensagem={aviso} tipo="aviso" />
 
       {resultado === null && <LoadingState mensagem="Carregando horários da equipe…" />}
       {resultado?.status === 'erro' && <ErrorState mensagem="Não foi possível carregar os horários." tentarNovamente={tentarNovamente} />}
@@ -202,9 +235,13 @@ export default function HorariosEquipe() {
       )}
 
       {acao && dados && (
-        <DialogoAgendaEquipe titulo={acao.tipo === 'excluir' ? 'Excluir horário' : acao.tipo === 'editar' ? 'Editar horário' : 'Cadastrar horário'}
+        <DialogoAgendaEquipe titulo={acao.tipo === 'excluir' ? 'Excluir horário' : acao.tipo === 'editar' ? 'Editar horário' : acao.tipo === 'lote' ? 'Cadastrar por turno' : 'Cadastrar horário'}
           ocupado={ocupado} erro={erro} aoFechar={() => setAcao(null)}>
-          {acao.tipo === 'excluir' ? (
+          {acao.tipo === 'lote' ? (
+            <FormularioHorariosEmLote dia={dia} unidade={unidade} profissional={profissional} unidades={dados.unidades} membros={membros}
+              horarios={dados.horarios} ocupado={ocupado} processadas={processadas} aoSalvar={salvarLote}
+              aoFechar={() => setAcao(null)} informarErro={setErro} />
+          ) : acao.tipo === 'excluir' ? (
             <>
               <p className="mb-5 text-body-small">Excluir o horário de {formatarDataAgenda(acao.horario.dataInicio)}, às {formatarHoraAgenda(acao.horario.dataInicio)}?</p>
               <div className="flex flex-wrap justify-end gap-2">
@@ -215,32 +252,15 @@ export default function HorariosEquipe() {
           ) : (
             <form onSubmit={salvar}>
               <fieldset disabled={ocupado} className="grid min-w-0 gap-3 sm:grid-cols-2">
-                <label className="min-w-0 text-body-small font-bold">Unidade
-                  <select name="unidade" required className={campoAgenda} defaultValue={horarioSelecionado?.idUnidade ?? unidade}>
-                    <option value="">Selecione a unidade</option>
-                    {dados.unidades.map((item) => <option key={item.idUnidade} value={item.idUnidade}>{item.nomeUnidade}</option>)}
-                  </select>
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Profissional
-                  <select name="profissional" required className={campoAgenda} defaultValue={horarioSelecionado?.idMembroEquipe ?? profissional}>
-                    <option value="">Selecione o profissional</option>
-                    {membros.map((item) => <option key={item.idMembroEquipe} value={item.idMembroEquipe}>{item.nomeMembroEquipe}</option>)}
-                  </select>
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Data de início
-                  <input name="dataInicio" type="date" required defaultValue={horarioSelecionado?.dataInicio.slice(0, 10) ?? dia} className={campoAgenda} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Data de término (se for outro dia)
-                  <input name="dataFim" type="date" className={campoAgenda}
-                    defaultValue={horarioSelecionado && horarioSelecionado.dataInicio.slice(0, 10) !== horarioSelecionado.dataFim.slice(0, 10)
-                      ? horarioSelecionado.dataFim.slice(0, 10) : ''} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Início
-                  <input name="horaInicio" type="time" step={1} required defaultValue={horarioSelecionado?.dataInicio.slice(11, 19)} className={campoAgenda} />
-                </label>
-                <label className="min-w-0 text-body-small font-bold">Fim
-                  <input name="horaFim" type="time" step={1} required defaultValue={horarioSelecionado?.dataFim.slice(11, 19)} className={campoAgenda} />
-                </label>
+                <CamposLocalHorario unidades={dados.unidades} profissionais={membros}
+                  unidade={horarioSelecionado?.idUnidade ?? unidade} profissional={horarioSelecionado?.idMembroEquipe ?? profissional} />
+                <CampoFormulario rotulo="Data de início" name="dataInicio" type="date" required
+                  defaultValue={horarioSelecionado?.dataInicio.slice(0, 10) ?? dia} />
+                <CampoFormulario rotulo="Data de término (se for outro dia)" name="dataFim" type="date"
+                  defaultValue={horarioSelecionado && horarioSelecionado.dataInicio.slice(0, 10) !== horarioSelecionado.dataFim.slice(0, 10)
+                    ? horarioSelecionado.dataFim.slice(0, 10) : ''} />
+                <CampoFormulario rotulo="Início" name="horaInicio" type="time" step={1} required defaultValue={horarioSelecionado?.dataInicio.slice(11, 19)} />
+                <CampoFormulario rotulo="Fim" name="horaFim" type="time" step={1} required defaultValue={horarioSelecionado?.dataFim.slice(11, 19)} />
               </fieldset>
               <div className="mt-5 flex flex-wrap justify-end gap-2">
                 <Botoes texto="Voltar" variante="secundario" desabilitado={ocupado} onClick={() => setAcao(null)} />

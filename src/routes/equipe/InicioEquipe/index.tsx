@@ -10,6 +10,7 @@ import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacien
 import { ApiError } from '../../../services/apiClient'
 import { solicitacaoService } from '../../../services/solicitacaoService'
 import type { SolicitacaoAjuda } from '../../../types/solicitacao'
+import normalizarBusca from '../../../utils/normalizarBusca'
 import { carregarFilaEquipe, consultaAindaAgendada, resumirPedido } from './dadosVisaoGeral'
 import type { PedidoDaFila } from './dadosVisaoGeral'
 
@@ -25,10 +26,6 @@ const formatoData = new Intl.DateTimeFormat('pt-BR', {
 })
 const foco = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro'
 const colunas = 'sm:grid-cols-[minmax(0,1.12fr)_minmax(0,0.85fr)_minmax(0,1fr)_auto]'
-
-function normalizar(valor: string) {
-  return valor.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
-}
 
 export default function InicioEquipe() {
   const { sessao, definirSessao } = useSessao()
@@ -60,10 +57,10 @@ export default function InicioEquipe() {
     }) : []
   const totais = { abertas: 0, analise: 0, aceitas: 0 }
   for (const { grupo } of fila) totais[grupo]++
-  const termo = normalizar(busca)
+  const termo = normalizarBusca(busca)
   const pedidosVisiveis = fila.filter(({ grupo, paciente, pedido }) =>
     (filtro === 'todas' || filtro === grupo)
-    && normalizar(`${paciente ?? ''} #${pedido.idSolicitacao}`).includes(termo),
+    && normalizarBusca(`${paciente ?? ''} #${pedido.idSolicitacao}`).includes(termo),
   )
 
   function atualizarFila() {

@@ -32,6 +32,8 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
   const [planoSalvo, setPlanoSalvo] = useState<PlanoComparecimento | null>(null)
   const [editando, setEditando] = useState(false)
   const [salvando, setSalvando] = useState(false)
+  const [duracao, setDuracao] = useState('')
+  const [antecedencia, setAntecedencia] = useState('15')
   const [mensagem, setMensagem] = useState<{ texto: string; erro: boolean } | null>(null)
   const requisicao = useRef<AbortController | null>(null)
   const conferirAposFalha = useRef(false)
@@ -47,8 +49,20 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
   const planoAtual = !!plano && Number.isFinite(saida) && timestampDaAgenda(plano.dataAtendimentoReferencia) === inicioConsulta
     && (!endereco || endereco === plano.destinoTrajeto)
   const deOnibus = plano?.meioTransporte.localeCompare(transportePadrao, 'pt-BR', { sensitivity: 'base' }) === 0
+  const minutos = Number(duracao)
+  const margem = Number(antecedencia)
+  const previaSaida = antecedencia !== '' && Number.isInteger(minutos) && minutos >= 1 && minutos <= 9999
+    && Number.isInteger(margem) && margem >= 0 && margem <= 999
+    ? inicioConsulta - (minutos + margem) * 60_000 : null
 
   useEffect(() => () => requisicao.current?.abort(), [])
+
+  function abrirPlano() {
+    setDuracao(planoAtual && plano ? String(plano.duracaoMinutos) : '')
+    setAntecedencia(String(plano?.margemMinutos ?? 15))
+    setMensagem(null)
+    setEditando(true)
+  }
 
   async function salvarPlano(evento: SubmitEvent<HTMLFormElement>) {
     evento.preventDefault()
@@ -108,8 +122,7 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
 
   return (
     <section aria-labelledby="titulo-plano" className="min-w-0 pb-4">
-      <h2 id="titulo-plano" className="text-h3">Planejar minha ida</h2>
-      <p className="mt-1 text-body-small text-azul-profundo/80">Use sua estimativa de viagem para saber que horas sair.</p>
+      <h3 id="titulo-plano" className="sr-only">Plano de comparecimento</h3>
       {mensagem && <p role={mensagem.erro ? 'alert' : 'status'} className={`mt-3 text-body-small font-semibold ${mensagem.erro ? 'text-critico' : 'text-turquesa-escuro'}`}>{mensagem.texto}</p>}
       {resultado === null && <div className="mt-3"><LoadingState mensagem="Buscando seu plano…" /></div>}
       {resultado?.status === 'erro' && (
@@ -142,7 +155,7 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
               </dl>
               {!editando && (
                 <div className="border-t border-azul-profundo/10 px-4 py-3 sm:px-5">
-                  <Botoes texto="Editar plano" variante="contornoTurquesa" onClick={() => setEditando(true)} />
+                  <Botoes texto="Editar plano" variante="contornoTurquesa" onClick={abrirPlano} />
                 </div>
               )}
             </>
@@ -150,8 +163,8 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
             <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
               <p className="max-w-sm text-body-small text-azul-profundo/80">{plano
                 ? 'A consulta mudou. Revise o trajeto para calcular uma nova hora de saída.'
-                : 'Informe quanto tempo leva de ônibus e com quanta antecedência quer chegar à consulta.'}</p>
-              {!editando && <Botoes texto={plano ? 'Revisar plano' : 'Calcular hora de saída'} icone={FiArrowRight} posicaoIcone="direita" onClick={() => setEditando(true)} />}
+                : 'Se já souber quanto tempo dura a viagem, use esse valor para calcular a hora de sair.'}</p>
+              {!editando && <Botoes texto={plano ? 'Revisar plano' : 'Calcular hora de saída'} icone={FiArrowRight} posicaoIcone="direita" onClick={abrirPlano} />}
             </div>
           )}
           {editando && (
@@ -173,12 +186,19 @@ export default function PlanoDaConsulta({ idAgendamento, inicioConsulta, enderec
                   </label>
                 )}
                 <label className="min-w-0 text-body-small font-semibold">Tempo estimado de trajeto (min)
-                  <input name="duracao" type="number" required min={1} max={9999} defaultValue={plano?.duracaoMinutos} className={campo} />
+                  <input name="duracao" type="number" required min={1} max={9999} value={duracao}
+                    onChange={(evento) => setDuracao(evento.target.value)} className={campo} />
                 </label>
                 <label className="min-w-0 text-body-small font-semibold">Antecedência para chegar (min)
-                  <input name="margem" type="number" required min={0} max={999} defaultValue={plano?.margemMinutos ?? 15} className={campo} />
+                  <input name="margem" type="number" required min={0} max={999} value={antecedencia}
+                    onChange={(evento) => setAntecedencia(evento.target.value)} className={campo} />
                 </label>
               </fieldset>
+              {previaSaida !== null && (
+                <p className="rounded-lg bg-menta px-3 py-2 text-body-small text-turquesa-escuro">
+                  Saída sugerida às <strong>{formatoHora.format(previaSaida)}</strong>, {formatoDia.format(previaSaida)}.
+                </p>
+              )}
               <div className="flex flex-wrap gap-2">
                 <Botoes tipo="submit" texto="Salvar plano" carregando={salvando} />
                 <Botoes texto="Voltar" variante="secundario" desabilitado={salvando} onClick={() => {

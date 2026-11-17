@@ -30,7 +30,7 @@ const itensPreparo = [
     pergunta: 'Consulta presencial',
     resposta: (
       <>
-        <p>Confira o local, estime o tempo de trajeto e reserve uma margem para imprevistos.</p>
+        <p>Confira o endereço e calcule o trajeto de ônibus em Detalhes da consulta. Escolha com quanta antecedência você quer chegar.</p>
         <Link
           to="/acesso"
           className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -41,16 +41,16 @@ const itensPreparo = [
     ),
   },
   {
-    id: 'virtual',
-    pergunta: 'Consulta virtual',
+    id: 'dificuldade',
+    pergunta: 'Se eu não puder ir?',
     resposta: (
       <>
-        <p>Confira câmera, microfone e conexão antes do atendimento. Escolha um lugar tranquilo e teste o aparelho que vai usar na consulta.</p>
+        <p>Abra a consulta no portal e toque em Preciso de ajuda. Conte o que dificulta sua ida e informe em quais horários você pode comparecer.</p>
         <Link
           to="/acesso"
           className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
         >
-          Acessar o preparo virtual <FiArrowRight aria-hidden="true" />
+          Entrar no portal <FiArrowRight aria-hidden="true" />
         </Link>
       </>
     ),

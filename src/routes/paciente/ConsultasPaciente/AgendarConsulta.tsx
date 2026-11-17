@@ -15,6 +15,7 @@ import { horarioService } from '../../../services/horarioService'
 import { unidadeService } from '../../../services/unidadeService'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
 import type { EstabelecimentoDemas } from '../../../types/demas'
+import normalizarBusca from '../../../utils/normalizarBusca'
 import { useBuscaPaciente } from '../useBuscaPaciente'
 
 const formatoDia = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', dateStyle: 'long' })
@@ -22,10 +23,6 @@ const formatoDiaCurto = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day:
 const formatoHora = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', timeStyle: 'short' })
 const PAGINA_UNIDADES = 6
 const foco = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro'
-
-function normalizar(texto: string) {
-  return texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase('pt-BR').trim()
-}
 
 async function carregarOpcoes(opcoes: OpcoesAutenticadas) {
   const unidades = await unidadeService.listar(opcoes)
@@ -63,9 +60,9 @@ export default function AgendarConsulta({ aoAgendar, aoCancelar }: AgendarConsul
   for (const { idUnidade: id, inicio } of horarios) {
     if (!primeiraVagaPorUnidade.has(id)) primeiraVagaPorUnidade.set(id, inicio)
   }
-  const termo = normalizar(busca)
+  const termo = normalizarBusca(busca)
   const locais = (dados?.unidades ?? []).filter(({ nomeUnidade, endereco, codigoCnes }) =>
-    normalizar(`${nomeUnidade} ${endereco} ${codigoCnes ?? ''}`).includes(termo),
+    normalizarBusca(`${nomeUnidade} ${endereco} ${codigoCnes ?? ''}`).includes(termo),
   ).sort((a, b) => Number(primeiraVagaPorUnidade.has(b.idUnidade)) - Number(primeiraVagaPorUnidade.has(a.idUnidade))
     || a.nomeUnidade.localeCompare(b.nomeUnidade, 'pt-BR'))
   const unidade = dados?.unidades.find(({ idUnidade: id }) => id === idUnidade)

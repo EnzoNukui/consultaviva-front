@@ -12,6 +12,7 @@ function lerUnidade(formulario: FormData) {
   const nomeUnidade = String(formulario.get('nome') ?? '').trim()
   const endereco = String(formulario.get('endereco') ?? '').trim()
   if (!nomeUnidade || !endereco) return 'Informe o nome e o endereço da unidade.'
+  if (nomeUnidade.length > 100 || endereco.length > 250) return 'Use até 100 caracteres no nome e 250 no endereço.'
   return { nomeUnidade, endereco }
 }
 

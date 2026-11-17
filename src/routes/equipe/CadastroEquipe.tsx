@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import type { ComponentPropsWithoutRef, ReactNode, SubmitEvent } from 'react'
-import { FiCheck, FiPlus, FiSearch } from 'react-icons/fi'
+import type { ReactNode, SubmitEvent } from 'react'
+import { FiPlus, FiSearch } from 'react-icons/fi'
+import AvisoOperacao from '../../components/AvisoOperacao/AvisoOperacao'
 import Botoes from '../../components/Botoes/Botoes'
 import EmptyState from '../../components/EmptyState/EmptyState'
 import ErrorState from '../../components/ErrorState/ErrorState'
 import LoadingState from '../../components/LoadingState/LoadingState'
 import { useBuscaAutenticada } from '../../hooks/useBuscaAutenticada'
 import type { OpcoesAutenticadas } from '../../types/autenticacao'
-import { campoAgenda, DialogoAgendaEquipe } from './ControlesAgendaEquipe'
+import normalizarBusca from '../../utils/normalizarBusca'
+import { DialogoAgendaEquipe } from './ControlesAgendaEquipe'
 import NavegacaoEquipe from './NavegacaoEquipe'
 import { useOperacaoAgendaEquipe } from './useOperacaoAgendaEquipe'
 
@@ -30,19 +32,15 @@ type CadastroProps<T, D> = {
 }
 type Acao<T> = { tipo: 'novo' } | { tipo: 'editar' | 'excluir'; item: T }
 
-function normalizar(valor: string) {
-  return valor.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
-}
-
 export default function CadastroEquipe<T, D>(config: CadastroProps<T, D>) {
   const { resultado, tentarNovamente } = useBuscaAutenticada(config.carregar)
   const { ocupado, erro, setErro, executar } = useOperacaoAgendaEquipe()
   const [busca, setBusca] = useState('')
   const [acao, setAcao] = useState<Acao<T> | null>(null)
   const [mensagem, setMensagem] = useState('')
-  const termo = normalizar(busca)
+  const termo = normalizarBusca(busca)
   const registros = resultado?.status === 'sucesso' ? resultado.dados
-    .filter((item) => normalizar(config.textoDaBusca(item)).includes(termo))
+    .filter((item) => normalizarBusca(config.textoDaBusca(item)).includes(termo))
     .toSorted((a, b) => config.nomeDoRegistro(a).localeCompare(config.nomeDoRegistro(b), 'pt-BR')) : []
   const itemAtual = acao && acao.tipo !== 'novo' ? acao.item : null
 
@@ -98,7 +96,7 @@ export default function CadastroEquipe<T, D>(config: CadastroProps<T, D>) {
         </div>
         {resultado?.status === 'sucesso' && <Botoes texto={`Cadastrar ${config.singular}`} icone={FiPlus} onClick={() => abrir({ tipo: 'novo' })} />}
       </div>
-      {mensagem && <p role="status" className="mb-4 flex items-center gap-2 rounded-lg bg-menta px-4 py-2.5 text-body-small font-bold text-turquesa-escuro"><FiCheck aria-hidden="true" />{mensagem}</p>}
+      <AvisoOperacao mensagem={mensagem} />
       {resultado === null && <LoadingState mensagem={`Carregando ${config.plural}…`} />}
       {resultado?.status === 'erro' && <ErrorState mensagem={`Não foi possível carregar ${config.plural}.`} tentarNovamente={tentarNovamente} />}
       {resultado?.status === 'sucesso' && (
@@ -158,8 +156,4 @@ export default function CadastroEquipe<T, D>(config: CadastroProps<T, D>) {
       )}
     </>
   )
-}
-
-export function CampoCadastro({ rotulo, ...atributos }: { rotulo: string } & ComponentPropsWithoutRef<'input'>) {
-  return <label className="block min-w-0 text-body-small font-bold">{rotulo}<input {...atributos} className={campoAgenda} /></label>
 }

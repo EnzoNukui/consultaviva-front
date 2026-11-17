@@ -1,12 +1,8 @@
 import type {
   AtualizarPlanoRequest,
-  AtualizarPreparoRequest,
   CriarPlanoRequest,
-  CriarPreparoRequest,
   HistoricoEvento,
   PlanoComparecimento,
-  PreparoVirtual,
-  SincronizacaoAgenda,
 } from '../types/atendimento'
 import type { OpcoesAutenticadas } from '../types/autenticacao'
 import { apiJsonBody, apiRequest } from './apiClient'
@@ -29,26 +25,6 @@ export const atendimentoService = {
   excluirPlano: (idPlano: number, opcoes: OpcoesAutenticadas) =>
     apiRequest<void>(`/atendimentos/planos/${idPlano}`, { ...opcoes, method: 'DELETE' }),
 
-  listarPreparos: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
-    apiRequest<PreparoVirtual[]>(`/atendimentos/agendamentos/${idAgendamento}/preparos`, opcoes),
-
-  buscarPreparo: (idPreparo: number, opcoes: OpcoesAutenticadas) =>
-    apiRequest<PreparoVirtual>(`/atendimentos/preparos/${idPreparo}`, opcoes),
-
-  inserirPreparo: (dados: CriarPreparoRequest, opcoes: OpcoesAutenticadas) =>
-    apiRequest<PreparoVirtual>('/atendimentos/preparos', { ...opcoes, method: 'POST', body: apiJsonBody(dados) }),
-
-  atualizarPreparo: (idPreparo: number, dados: AtualizarPreparoRequest, opcoes: OpcoesAutenticadas) =>
-    apiRequest<PreparoVirtual>(`/atendimentos/preparos/${idPreparo}`, {
-      ...opcoes, method: 'PUT', body: apiJsonBody(dados),
-    }),
-
-  excluirPreparo: (idPreparo: number, opcoes: OpcoesAutenticadas) =>
-    apiRequest<void>(`/atendimentos/preparos/${idPreparo}`, { ...opcoes, method: 'DELETE' }),
-
   listarHistorico: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
     apiRequest<HistoricoEvento[]>(`/atendimentos/agendamentos/${idAgendamento}/historico`, opcoes),
-
-  listarSincronizacoes: (idAgendamento: number, opcoes: OpcoesAutenticadas) =>
-    apiRequest<SincronizacaoAgenda[]>(`/atendimentos/agendamentos/${idAgendamento}/sincronizacoes`, opcoes),
 }

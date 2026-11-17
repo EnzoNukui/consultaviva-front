@@ -13,6 +13,7 @@ import type { OpcoesAutenticadas } from '../../../types/autenticacao'
 import { listarSolicitacoesDoAgendamento, solicitacaoAtiva } from '../SolicitacoesPaciente/dadosSolicitacoes'
 import { useBuscaPaciente } from '../useBuscaPaciente'
 import PlanoDaConsulta from './PlanoDaConsulta'
+import TrajetoDaConsulta from './TrajetoDaConsulta'
 
 const formatoDia = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day: '2-digit' })
 const formatoMes = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', month: 'long', year: 'numeric' })
@@ -116,9 +117,20 @@ export default function DetalhesConsulta() {
               <AcoesConsultaPaciente key={consulta.agendamento.idAgendamento} consulta={consulta} pedido={pedido} aoConfirmar={atualizarResposta} />
             </section>
           )}
-          {futura && !virtual && resultadoPedido !== null && (
-            <PlanoDaConsulta key={consulta.agendamento.idAgendamento} idAgendamento={consulta.agendamento.idAgendamento}
-              inicioConsulta={consulta.inicio} endereco={consulta.unidade?.endereco} />
+          {futura && !virtual && (
+            <>
+              <TrajetoDaConsulta key={`${consulta.agendamento.idAgendamento}-${consulta.inicio}-${consulta.unidade?.endereco}`}
+                inicioConsulta={consulta.inicio} endereco={consulta.unidade?.endereco} nomeUnidade={consulta.unidade?.nomeUnidade} />
+              {resultadoPedido !== null && (
+                <details className="rounded-xl border border-azul-profundo/15 bg-superficie px-4 py-3 sm:px-5">
+                  <summary className="flex min-h-11 cursor-pointer items-center text-body-small font-bold text-turquesa-escuro">
+                    Planejar com um tempo de viagem informado
+                  </summary>
+                  <PlanoDaConsulta key={consulta.agendamento.idAgendamento} idAgendamento={consulta.agendamento.idAgendamento}
+                    inicioConsulta={consulta.inicio} endereco={consulta.unidade?.endereco} />
+                </details>
+              )}
+            </>
           )}
         </div>
       )}
