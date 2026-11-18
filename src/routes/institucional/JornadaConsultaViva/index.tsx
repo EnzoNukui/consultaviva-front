@@ -7,6 +7,7 @@ import {
   FiCalendar,
   FiCheckCircle,
   FiClipboard,
+  FiGitBranch,
   FiShield,
   FiUsers,
 } from 'react-icons/fi'
@@ -86,7 +87,7 @@ export default function JornadaConsultaViva() {
   const [etapaAtual, setEtapaAtual] = useState(0)
   const etapa = etapas[etapaAtual]
   const IconeEtapa = etapa.icone
-  const progresso = ((etapaAtual + 1) / etapas.length) * 100
+  const progressoCaminho = (etapaAtual / (etapas.length - 1)) * 100
 
   function irParaEtapa(indice: number) {
     setEtapaAtual(Math.max(0, Math.min(indice, etapas.length - 1)))
@@ -156,7 +157,35 @@ export default function JornadaConsultaViva() {
             </p>
           </header>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative mt-8 grid gap-3 lg:grid-cols-4">
+            <div
+              aria-label={`Progresso da jornada: etapa ${etapaAtual + 1} de ${etapas.length}`}
+              aria-valuemin={1}
+              aria-valuemax={etapas.length}
+              aria-valuenow={etapaAtual + 1}
+              role="progressbar"
+              className="pointer-events-none absolute bottom-12 left-5 top-12 w-0.5 rounded-full bg-azul-profundo/10 lg:hidden"
+            >
+              <span
+                aria-hidden="true"
+                className="block w-full rounded-full bg-turquesa transition-[height] duration-300 motion-reduce:transition-none"
+                style={{ height: `${progressoCaminho}%` }}
+              />
+            </div>
+            <div
+              aria-label={`Progresso da jornada: etapa ${etapaAtual + 1} de ${etapas.length}`}
+              aria-valuemin={1}
+              aria-valuemax={etapas.length}
+              aria-valuenow={etapaAtual + 1}
+              role="progressbar"
+              className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-9 hidden h-0.5 rounded-full bg-azul-profundo/10 lg:block"
+            >
+              <span
+                aria-hidden="true"
+                className="block h-full rounded-full bg-turquesa transition-[width] duration-300 motion-reduce:transition-none"
+                style={{ width: `${progressoCaminho}%` }}
+              />
+            </div>
             {etapas.map((item, indice) => {
               const Icone = item.icone
               const selecionada = indice === etapaAtual
@@ -167,28 +196,26 @@ export default function JornadaConsultaViva() {
                   aria-pressed={selecionada}
                   aria-controls="detalhe-etapa"
                   onClick={() => irParaEtapa(indice)}
-                  className={`group min-h-28 rounded-2xl border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro ${selecionada
+                  className={`group relative z-10 grid min-h-24 grid-cols-[2.5rem_1fr] items-center gap-x-3 rounded-2xl border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquesa-escuro lg:min-h-36 lg:grid-cols-1 lg:content-start lg:justify-items-center lg:gap-0 lg:text-center ${selecionada
                     ? 'border-azul-profundo bg-azul-profundo text-superficie shadow-lg shadow-azul-profundo/10'
                     : 'border-azul-profundo/12 bg-superficie text-azul-profundo hover:border-turquesa-escuro/40 hover:bg-menta'
                     }`}
                 >
-                  <span className={`flex size-9 items-center justify-center rounded-xl ${selecionada ? 'bg-turquesa/20 text-ciano' : 'bg-menta text-turquesa-escuro'}`}>
+                  <span className={`col-start-1 row-span-2 flex size-10 items-center justify-center rounded-xl ring-4 ring-fundo transition-colors lg:row-span-1 ${selecionada ? 'bg-turquesa/20 text-ciano' : 'bg-menta text-turquesa-escuro'}`}>
                     <Icone aria-hidden="true" className="size-4" />
                   </span>
-                  <span className={`mt-3 block text-caption font-bold ${selecionada ? 'text-superficie/60' : 'text-azul-profundo/55'}`}>
+                  <span className={`col-start-2 row-start-1 block text-caption font-bold lg:mt-3 ${selecionada ? 'text-superficie/60' : 'text-azul-profundo/55'}`}>
                     ETAPA {indice + 1}
                   </span>
-                  <span className="mt-0.5 block text-body-small font-bold">{item.atalho}</span>
+                  <span className="col-start-2 row-start-2 mt-0.5 block text-body-small font-bold lg:col-auto">{item.atalho}</span>
                 </button>
               )
             })}
           </div>
 
-          <div className="mt-5" role="progressbar" aria-label="Etapa selecionada" aria-valuemin={1} aria-valuemax={etapas.length} aria-valuenow={etapaAtual + 1}>
-            <div className="text-caption font-semibold text-azul-profundo/65">Etapa {etapaAtual + 1} de {etapas.length}</div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-azul-profundo/10">
-              <div className="h-full rounded-full bg-turquesa transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${progresso}%` }} />
-            </div>
+          <div className="mt-4 flex items-center justify-between text-caption font-semibold text-azul-profundo/65">
+            <span>Etapa {etapaAtual + 1} de {etapas.length}</span>
+            <span>Use as etapas para navegar</span>
           </div>
 
           <article id="detalhe-etapa" aria-live="polite" aria-atomic="true" className="mt-6 overflow-hidden rounded-3xl border border-azul-profundo/10 bg-superficie shadow-xl shadow-azul-profundo/5">
@@ -228,7 +255,10 @@ export default function JornadaConsultaViva() {
 
                 {etapa.desfechos && (
                   <div className="mt-5">
-                    <h4 className="font-bold">O que pode acontecer</h4>
+                    <h4 className="flex items-center gap-2 font-bold">
+                      <FiGitBranch aria-hidden="true" className="size-4 text-turquesa-escuro" />
+                      A jornada pode seguir por dois caminhos
+                    </h4>
                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
                       {etapa.desfechos.map(({ titulo, descricao, icone: Icone }) => (
                         <div key={titulo} className="flex gap-3 rounded-2xl border border-azul-profundo/10 p-4">
