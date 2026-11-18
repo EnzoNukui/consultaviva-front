@@ -98,13 +98,13 @@ export default function ListaResgateEquipe({ aba }: { aba: 'solicitacoes' | 'pro
               <p role="status" className="mt-1 text-body-small text-azul-profundo/75">{visiveis.length} {visiveis.length === 1 ? 'registro' : 'registros'}</p>
             </div>
             {itens.length > 0 && (
-              <div className="flex w-full flex-wrap items-end gap-3 sm:w-auto">
-                <label className="relative min-w-0 flex-1 text-body-small font-bold">Buscar
+              <div className="grid w-full min-w-0 gap-3 sm:w-full sm:max-w-[36rem] sm:grid-cols-2">
+                <label className="relative block min-w-0 text-body-small font-bold">Buscar
                   <FiSearch aria-hidden="true" className="pointer-events-none absolute bottom-3.5 left-3 size-4 text-turquesa-escuro" />
-                  <input type="search" className={`${classeCampoFormulario} pl-9 sm:min-w-64`} value={busca} onChange={(evento) => setBusca(evento.target.value)}
+                  <input type="search" className={`${classeCampoFormulario} pl-9`} value={busca} onChange={(evento) => setBusca(evento.target.value)}
                     placeholder="Paciente ou número" />
                 </label>
-                <label className="flex-1 text-body-small font-bold">Situação
+                <label className="block min-w-0 text-body-small font-bold">Situação
                   <select className={classeCampoFormulario} value={situacao} onChange={(evento) => setSituacao(evento.target.value)}>
                     <option value="">Todas as situações</option>
                     {Object.entries(exibirPropostas ? situacoesProposta : situacoesSolicitacao).map(([id, texto]) => <option key={id} value={id}>{texto}</option>)}
@@ -115,9 +115,10 @@ export default function ListaResgateEquipe({ aba }: { aba: 'solicitacoes' | 'pro
           </div>
           {visiveis.length === 0 ? (
             <EmptyState titulo={itens.length ? 'Nenhum resultado' : exibirPropostas ? 'Nenhuma proposta gerada' : 'Nenhuma solicitação recebida'}
-              mensagem={itens.length ? 'Altere a busca ou o filtro de situação.' : exibirPropostas
+              mensagem={itens.length ? 'Nenhum registro corresponde aos filtros selecionados.' : exibirPropostas
                 ? 'As alternativas geradas durante a análise de uma solicitação aparecem aqui.'
-                : 'Os pedidos de ajuda dos pacientes aparecem aqui.'} />
+                : 'Os pedidos de ajuda dos pacientes aparecem aqui.'}
+              acao={itens.length ? <Botoes texto="Limpar busca e situação" variante="secundario" onClick={() => { setBusca(''); setSituacao('') }} /> : undefined} />
           ) : (
             <ul className="divide-y divide-azul-profundo/10 overflow-hidden rounded-xl border border-azul-profundo/15 bg-superficie">
               {visiveis.map((item) => (
