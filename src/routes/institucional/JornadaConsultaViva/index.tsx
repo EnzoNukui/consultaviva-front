@@ -34,48 +34,48 @@ interface EtapaJornada {
 const etapas: EtapaJornada[] = [
   {
     atalho: 'Consulta marcada',
-    titulo: 'A consulta está marcada.',
-    resumo: 'O paciente confere as informações pelo portal.',
-    paciente: 'Confere data, horário e local.',
-    equipe: 'Mantém o horário na agenda da unidade.',
+    titulo: 'Sua consulta está marcada',
+    resumo: 'Confira a data, o horário e a unidade pelo portal.',
+    paciente: 'Confira data, horário e local.',
+    equipe: 'Mantém o horário reservado na agenda da unidade.',
     regra: 'Os pacientes e horários desta demonstração são fictícios.',
     icone: FiCalendar,
   },
   {
     atalho: 'Pedir ajuda',
-    titulo: 'Algo pode atrapalhar?',
-    resumo: 'O paciente conta o que está acontecendo e quando poderia ser atendido.',
-    paciente: 'Explica a dificuldade e informa sua disponibilidade.',
+    titulo: 'Precisa pedir ajuda?',
+    resumo: 'Conte o que dificulta seu atendimento e informe quando você poderia ir.',
+    paciente: 'Explique a dificuldade e indique sua disponibilidade.',
     equipe: 'Recebe o pedido ligado à consulta.',
     regra: 'Pedir ajuda não cancela a consulta.',
     icone: FiClipboard,
   },
   {
     atalho: 'Equipe avalia',
-    titulo: 'A equipe confere as opções.',
-    resumo: 'A equipe compara o pedido com as regras e os horários disponíveis.',
-    paciente: 'Acompanha a análise pelo portal.',
-    equipe: 'Verifica o que combina com o pedido. A modalidade virtual precisa de autorização profissional.',
+    titulo: 'A equipe analisa o pedido',
+    resumo: 'A equipe confere as informações e verifica os horários disponíveis.',
+    paciente: 'Acompanhe a análise pelo portal.',
+    equipe: 'Compara o pedido com a agenda e os critérios da unidade. Uma consulta virtual depende de autorização profissional.',
     regra: 'Nenhum horário é inventado ou alterado automaticamente.',
     icone: FiUsers,
   },
   {
     atalho: 'Decisão',
-    titulo: 'O paciente decide.',
-    resumo: 'Se houver uma opção, o paciente pode aceitar ou recusar.',
-    paciente: 'Confere a proposta e responde.',
+    titulo: 'Você decide',
+    resumo: 'Se houver uma opção, você escolhe aceitar ou recusar.',
+    paciente: 'Avalie a opção e responda.',
     equipe: 'Confirma a mudança depois do aceite e das autorizações necessárias.',
     regra: 'A consulta original continua marcada até a mudança ser confirmada.',
     icone: FiShield,
     desfechos: [
       {
-        titulo: 'Tem opção',
+        titulo: 'Opção encontrada',
         descricao: 'A equipe confirma a mudança depois do aceite.',
         icone: FiCheckCircle,
       },
       {
-        titulo: 'Não tem opção',
-        descricao: 'A equipe dá um retorno e a consulta permanece marcada.',
+        titulo: 'Sem opção no momento',
+        descricao: 'Você recebe um retorno, e a consulta original segue marcada.',
         icone: FiAlertCircle,
       },
     ],
@@ -101,10 +101,10 @@ export default function JornadaConsultaViva() {
           <div>
             <p className="text-caption font-bold tracking-[0.2em] text-ciano">A JORNADA DA CONSULTAVIVA</p>
             <h1 className="mt-4 max-w-[15ch] text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.04] font-bold tracking-[-0.055em] text-superficie">
-              A consulta está marcada. E se algo mudar?
+              Sua consulta está marcada, mas você precisa de ajuda?
             </h1>
             <p className="mt-5 max-w-2xl text-body-large text-superficie/80">
-              O paciente conta o que está dificultando. A equipe avalia as opções, e a consulta continua marcada até uma mudança ser confirmada.
+              Se surgir uma dificuldade, avise a equipe. Ela avalia as opções e mantém a consulta original até confirmar uma mudança.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Botoes texto="Percorrer a jornada" para="#etapas" icone={FiArrowRight} posicaoIcone="direita" tamanho="grande" />
@@ -118,7 +118,7 @@ export default function JornadaConsultaViva() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-caption font-bold tracking-wider text-ciano">PACIENTE E EQUIPE</p>
-                <h2 className="mt-1 text-h3 text-superficie">Um pedido, próximos passos</h2>
+                <h2 className="mt-1 text-h3 text-superficie">Do pedido à resposta</h2>
               </div>
               <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-2xl bg-turquesa/15 text-ciano">
                 <FiShield className="size-6" />
@@ -129,19 +129,19 @@ export default function JornadaConsultaViva() {
               <div className="rounded-2xl border border-superficie/10 bg-azul-profundo/60 p-4">
                 <span className="grid size-10 place-items-center rounded-xl bg-turquesa/15 text-ciano"><FiCalendar aria-hidden="true" /></span>
                 <p className="mt-3 text-body-small font-bold text-superficie">Consulta marcada</p>
-                <p className="mt-1 text-caption text-superficie/65">O paciente acompanha o horário</p>
+                <p className="mt-1 text-caption text-superficie/65">Confira data e local pelo portal</p>
               </div>
               <FiArrowRight aria-hidden="true" className="mx-auto size-5 rotate-90 text-ciano sm:rotate-0" />
               <div className="rounded-2xl border border-turquesa/40 bg-turquesa/10 p-4">
                 <span className="grid size-10 place-items-center rounded-xl bg-turquesa/20 text-ciano"><FiUsers aria-hidden="true" /></span>
-                <p className="mt-3 text-body-small font-bold text-superficie">Paciente + equipe</p>
-                <p className="mt-1 text-caption text-superficie/65">Avaliam juntos o que pode ser feito</p>
+                <p className="mt-3 text-body-small font-bold text-superficie">Paciente e equipe</p>
+                <p className="mt-1 text-caption text-superficie/65">A equipe analisa o pedido</p>
               </div>
             </div>
 
             <div className="mt-4 flex items-center gap-3 rounded-xl bg-superficie/10 px-4 py-3 text-body-small text-superficie/85">
               <FiShield aria-hidden="true" className="size-4 shrink-0 text-ciano" />
-              <p>A consulta só muda depois das confirmações necessárias.</p>
+              <p>A consulta original segue ativa até a mudança ser confirmada.</p>
             </div>
           </div>
         </div>
@@ -151,9 +151,9 @@ export default function JornadaConsultaViva() {
         <div className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:py-24">
           <header className="max-w-3xl">
             <p className="text-caption font-bold tracking-[0.2em] text-turquesa-escuro">PASSO A PASSO</p>
-            <h2 id="titulo-etapas" className="mt-3 text-h1 text-balance">Veja o que acontece em cada etapa.</h2>
+            <h2 id="titulo-etapas" className="mt-3 text-h1 text-balance">Do pedido à resposta, etapa por etapa</h2>
             <p className="mt-4 text-body-large text-azul-profundo/75">
-              Toque em uma etapa para saber mais.
+              Selecione uma etapa para ver os detalhes.
             </p>
           </header>
 
@@ -215,7 +215,6 @@ export default function JornadaConsultaViva() {
 
           <div className="mt-4 flex items-center justify-between text-caption font-semibold text-azul-profundo/65">
             <span>Etapa {etapaAtual + 1} de {etapas.length}</span>
-            <span>Use as etapas para navegar</span>
           </div>
 
           <article id="detalhe-etapa" aria-live="polite" aria-atomic="true" className="mt-6 overflow-hidden rounded-3xl border border-azul-profundo/10 bg-superficie shadow-xl shadow-azul-profundo/5">
@@ -230,7 +229,7 @@ export default function JornadaConsultaViva() {
                 <h3 className="mt-6 text-h2 text-superficie">{etapa.titulo}</h3>
                 <p className="mt-3 text-body text-superficie/75">{etapa.resumo}</p>
                 <div className="mt-7 rounded-2xl border border-superficie/10 bg-superficie/5 p-4">
-                  <p className="text-caption font-bold tracking-wider text-ciano">REGRA QUE PROTEGE</p>
+                  <p className="text-caption font-bold tracking-wider text-ciano">O QUE VOCÊ PRECISA SABER</p>
                   <p className="mt-2 text-body-small text-superficie/85">{etapa.regra}</p>
                 </div>
               </div>
@@ -241,14 +240,14 @@ export default function JornadaConsultaViva() {
                     <p className="flex items-center gap-2 text-caption font-bold tracking-wider text-turquesa-escuro">
                       <FiCalendar aria-hidden="true" className="size-4" /> PACIENTE
                     </p>
-                    <h4 id="visao-paciente" className="mt-3 font-bold">O que faz</h4>
+                    <h4 id="visao-paciente" className="mt-3 font-bold">Sua parte</h4>
                     <p className="mt-2 text-body-small text-azul-profundo/75">{etapa.paciente}</p>
                   </section>
                   <section aria-labelledby="visao-equipe" className="rounded-2xl border border-azul-profundo/10 bg-fundo p-4 sm:p-5">
                     <p className="flex items-center gap-2 text-caption font-bold tracking-wider text-turquesa-escuro">
                       <FiUsers aria-hidden="true" className="size-4" /> EQUIPE
                     </p>
-                    <h4 id="visao-equipe" className="mt-3 font-bold">O que faz</h4>
+                    <h4 id="visao-equipe" className="mt-3 font-bold">Parte da equipe</h4>
                     <p className="mt-2 text-body-small text-azul-profundo/75">{etapa.equipe}</p>
                   </section>
                 </div>
@@ -302,12 +301,12 @@ export default function JornadaConsultaViva() {
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start gap-6 px-5 py-14 sm:px-8 sm:py-16 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-caption font-bold tracking-[0.2em] text-turquesa-escuro">QUER SABER MAIS?</p>
-            <h2 id="titulo-continue" className="mt-2 text-h2">Conheça a ConsultaViva.</h2>
+            <h2 id="titulo-continue" className="mt-2 text-h2">Conheça a ConsultaViva</h2>
             <p className="mt-2 max-w-2xl text-body-small text-azul-profundo/75">
-              Veja a visão geral da proposta na página Solução.
+              Conheça a proposta completa na página Solução.
             </p>
           </div>
-          <Botoes texto="Ver a página Solução" para="/solucao" icone={FiArrowRight} posicaoIcone="direita" variante="contornoTurquesa" />
+          <Botoes texto="Entenda a solução" para="/solucao" icone={FiArrowRight} posicaoIcone="direita" variante="contornoTurquesa" />
         </div>
       </section>
     </>
