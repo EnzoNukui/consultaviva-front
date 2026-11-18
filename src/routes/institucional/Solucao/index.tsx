@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FiArrowDown, FiArrowRight } from 'react-icons/fi'
 import simbolo from '../../../assets/marca/simbolo-original.png'
+import Botoes from '../../../components/Botoes/Botoes'
 import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const etapas = [
@@ -284,6 +285,20 @@ export default function Solucao() {
           <p className="mt-4 text-body-small text-azul-profundo/80">
             Os cenários são fictícios e mostram como a ConsultaViva pode apoiar o paciente.
           </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="titulo-proxima-etapa" className="bg-menta">
+        <div className={`${larguraSecao} ${espacoSecao} flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between`}>
+          <div>
+            <h2 id="titulo-proxima-etapa" className="max-w-2xl text-h1 text-balance">
+              Veja a jornada de quem pede ajuda
+            </h2>
+            <p className="mt-3 max-w-xl text-body-large text-azul-profundo/80">
+              Acompanhe o caminho do pedido até a resposta da equipe.
+            </p>
+          </div>
+          <Botoes texto="Acompanhar a jornada" para="/jornada" icone={FiArrowRight} posicaoIcone="direita" />
         </div>
       </section>
     </>

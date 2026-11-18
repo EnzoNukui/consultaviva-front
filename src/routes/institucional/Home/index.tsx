@@ -1,5 +1,5 @@
 import {
-  FiArrowDown, FiArrowRight, FiCalendar, FiCheck, FiChevronRight,
+  FiArrowRight, FiCalendar, FiCheck, FiChevronRight,
   FiClipboard, FiHelpCircle, FiHome,
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
@@ -86,14 +86,23 @@ export default function Home() {
       >
         <div className="mx-auto w-full max-w-7xl px-5 pt-16 pb-8 sm:px-8 sm:pt-20 lg:py-24">
           <div className="relative z-10 lg:w-[48%]">
+            <p className="mb-5 inline-flex rounded-full border border-azul-profundo/10 bg-superficie/70 px-4 py-2 text-caption font-semibold text-turquesa-escuro">
+              Demonstração com dados fictícios
+            </p>
             <h1 id="titulo-home" className="max-w-[14ch] text-display">
               Da consulta marcada ao atendimento realizado.
             </h1>
             <p className="mt-6 max-w-sm text-body-large text-azul-profundo/80">
               Peça ajuda se algo dificultar sua ida à consulta.
             </p>
-            <div className="mt-8">
-              <Botoes texto="Ver como funciona" para="#como-funciona" icone={FiArrowDown} tamanho="grande" />
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Botoes texto="Ver a jornada" para="/jornada" icone={FiArrowRight} posicaoIcone="direita" tamanho="grande" />
+              <Link
+                to="/solucao"
+                className="inline-flex min-h-11 items-center rounded-sm font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+              >
+                Conheça a solução
+              </Link>
             </div>
             <p className="mt-6 text-body-small">
               Já tem uma consulta?{' '}
