@@ -3,16 +3,16 @@ import { useTituloPagina } from '../../../hooks/useTituloPagina'
 
 const etapas = [
   {
-    titulo: 'Entender as faltas',
-    descricao: 'Investigar o que impede o comparecimento.',
+    titulo: 'Entender as barreiras',
+    descricao: 'Investigar o que pode dificultar o acesso à consulta.',
   },
   {
-    titulo: 'Mapear barreiras',
-    descricao: 'Identificar os obstáculos mais relevantes.',
+    titulo: 'Mapear necessidades',
+    descricao: 'Organizar dificuldades ligadas à mobilidade, à rotina e ao acesso digital.',
   },
   {
-    titulo: 'Pensar alternativas',
-    descricao: 'Explorar formas de apoiar o planejamento e a comunicação.',
+    titulo: 'Avaliar formas de apoio',
+    descricao: 'Reunir orientações e alternativas compatíveis quando houver disponibilidade.',
   },
   {
     titulo: 'Criar o protótipo',
@@ -172,7 +172,7 @@ export default function Sobre() {
                 O QUE APRENDEMOS
               </p>
               <h2 id="titulo-barreiras" className="mt-3 max-w-[17ch] text-h1 text-superficie">
-                Sete barreiras, três grandes grupos
+                Barreiras que podem dificultar a consulta
               </h2>
             </div>
 

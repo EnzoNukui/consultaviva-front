@@ -74,7 +74,7 @@ const modulos = [
   { titulo: 'Preparo do dispositivo', descricao: 'Confira câmera, microfone e conexão.' },
   { titulo: 'Recuperação de vagas', descricao: 'Reaproveite horários liberados na agenda demonstrativa.' },
   { titulo: 'Resgate seguro', descricao: 'Acompanhe a proposta e confirme sua decisão.' },
-  { titulo: 'Google Agenda', descricao: 'A integração com o calendário pessoal faz parte da proposta do projeto.' },
+  { titulo: 'Agenda do protótipo', descricao: 'Consulte os agendamentos e acompanhe propostas de horário pelo portal.' },
 ]
 
 const comparacao = [
@@ -107,7 +107,7 @@ export default function Solucao() {
         <div className={larguraSecao}>
           <h1 id="titulo-solucao" className="max-w-[16ch] text-[clamp(2.75rem,8vw,7.25rem)] leading-none font-bold tracking-[-0.06em] lg:max-w-none">
             <span className="lg:block">Quando a consulta</span>{' '}
-            <span className="lg:block">precisa mudar.</span>
+            <span className="lg:block">precisa mudar</span>
           </h1>
           <a
             href="#demonstracao"
@@ -206,7 +206,7 @@ export default function Solucao() {
       <section aria-labelledby="titulo-modulos" className="bg-superficie">
         <div className={`${larguraSecao} ${espacoSecao} grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16`}>
           <div>
-            <h2 id="titulo-modulos" className="max-w-[14ch] text-h1">Seis módulos, uma jornada.</h2>
+            <h2 id="titulo-modulos" className="max-w-[14ch] text-h1">Seis módulos, uma jornada</h2>
             <p className="mt-4 max-w-md text-body-large text-azul-profundo/80">
               Cada módulo apoia uma parte do caminho, do preparo à confirmação da alternativa.
             </p>
@@ -227,7 +227,7 @@ export default function Solucao() {
         <div className={`${larguraSecao} ${espacoSecao}`}>
           <h2 id="titulo-arquitetura-solucao" className="max-w-[22ch] text-h1">Java no centro das decisões</h2>
           <p className="mt-4 max-w-2xl text-body-large text-azul-profundo/80">
-            A agenda do protótipo e a consulta de unidades usam fontes distintas.
+            No protótipo, os horários vêm da agenda de demonstração. Os dados das unidades são consultados em outra fonte.
           </p>
 
           <div className="mt-8 grid items-center gap-8 lg:mt-10 lg:grid-cols-[1.5fr_0.85fr] lg:gap-14">
@@ -258,7 +258,7 @@ export default function Solucao() {
         <div className={`${larguraSecao} ${espacoSecao}`}>
           <h2 id="titulo-comparacao" className="text-h1 text-balance">Três abordagens, os mesmos cenários</h2>
           <p id="descricao-comparacao" className="mt-4 text-body-large text-azul-profundo/80">
-            Comparação conceitual do que cada abordagem ajuda a resolver.
+            Compare o que cada abordagem oferece nos mesmos cenários.
           </p>
 
           <table aria-labelledby="titulo-comparacao" aria-describedby="descricao-comparacao" className="mt-8 w-full table-fixed border-collapse text-left text-caption sm:text-body">
@@ -282,7 +282,7 @@ export default function Solucao() {
             </tbody>
           </table>
           <p className="mt-4 text-body-small text-azul-profundo/80">
-            Cenários fictícios. A demonstração ilustra as funcionalidades do projeto.
+            Os cenários são fictícios e mostram como a ConsultaViva pode apoiar o paciente.
           </p>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { IoSend } from "react-icons/io5";
+import { FiCopy } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
 import { useTituloPagina } from '../../../hooks/useTituloPagina'
@@ -33,9 +33,9 @@ export default function Contato() {
 
     try {
       await navigator.clipboard.writeText(`Nome: ${nome}\nE-mail: ${email}\nPerfil: ${perfil}\n\n${mensagem}`)
-      setFeedback('Mensagem copiada. Agora você pode colá-la ao falar com a equipe.')
+      setFeedback('Mensagem copiada. Cole o texto ao falar com a equipe.')
     } catch {
-      setFeedback('O navegador não conseguiu copiar a mensagem. Selecione o texto e copie manualmente.')
+      setFeedback('A cópia automática não funcionou. Copie os campos manualmente e fale com a equipe pelos perfis em Integrantes.')
     }
   }
 
@@ -48,7 +48,7 @@ export default function Contato() {
             Fale com a <span className="text-turquesa-escuro">equipe</span>
           </h1>
           <p className="mt-4 max-w-xl text-body-large text-azul-profundo/80">
-            Tem uma dúvida, sugestão ou interesse em testar a ConsultaViva? Escreva sua mensagem para a equipe.
+            Tem uma dúvida ou sugestão? Deixe sua mensagem abaixo.
           </p>
         </header>
 
@@ -71,7 +71,7 @@ export default function Contato() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="contato-perfil" className={estiloRotulo}>Você é</label>
+            <label htmlFor="contato-perfil" className={estiloRotulo}>Como você participa?</label>
             <select id="contato-perfil" name="perfil" required defaultValue="" className={estiloCampo}>
               <option value="" disabled>Selecione seu perfil</option>
               <option>Paciente</option>
@@ -97,14 +97,14 @@ export default function Contato() {
           </div>
 
           <p id="contato-orientacao" className="rounded-xl bg-menta px-4 py-3 text-body-small text-azul-profundo/85">
-            O envio pelo site ainda não está disponível. Você pode copiar sua mensagem e falar com a equipe pelos{' '}
+            Este formulário não envia a mensagem. Copie o texto e entre em contato pelos{' '}
             <Link to="/integrantes" className="rounded-sm font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2">
               perfis em Integrantes
             </Link>.
           </p>
 
           <div className="flex flex-col items-center border-t border-azul-profundo/10 pt-5">
-            <Botoes texto="Enviar mensagem" tipo="submit" icone={IoSend} posicaoIcone="direita" />
+            <Botoes texto="Copiar mensagem" tipo="submit" icone={FiCopy} posicaoIcone="direita" />
             <p role="status" className="text-center text-body-small text-azul-profundo/85 not-empty:mt-3">
               {feedback}
             </p>

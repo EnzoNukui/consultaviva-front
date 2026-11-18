@@ -45,7 +45,7 @@ const itensPreparo = [
     pergunta: 'Se eu não puder ir?',
     resposta: (
       <>
-        <p>Abra a consulta no portal e toque em Preciso de ajuda. Conte o que dificulta sua ida e informe em quais horários você pode comparecer.</p>
+        <p>Abra a consulta no portal e selecione “Preciso de ajuda”. Conte o que está dificultando seu comparecimento e informe quando você pode ir.</p>
         <Link
           to="/acesso"
           className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -160,8 +160,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-5 pb-20 text-center sm:px-8 lg:pb-28">
           <div className="border-t border-azul-profundo/10 pt-20 lg:pt-28">
             <h2 id="titulo-caminho" className="text-display">
-              Marcar é só o começo.
-              <span className="block text-turquesa-escuro">O difícil é chegar.</span>
+              Marcar a consulta é o primeiro passo.
+              <span className="block text-turquesa-escuro">Chegar até ela também pode ser difícil.</span>
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-body-large text-azul-profundo/80">
               Transporte, trabalho e imprevistos fazem parte da rotina.
@@ -298,7 +298,7 @@ export default function Home() {
       >
         <div className="mx-auto w-full max-w-7xl px-5 pt-16 pb-10 sm:px-8 sm:pt-20 lg:py-24">
           <div className="relative z-10 max-w-xl lg:w-[47%]">
-            <h2 id="titulo-preparo" className="max-w-[14ch] text-display">Prepare-se para a consulta.</h2>
+            <h2 id="titulo-preparo" className="max-w-[14ch] text-display">Prepare-se para a consulta</h2>
             <p className="mt-5 max-w-md text-body-large text-azul-profundo/80">
               Escolha seu tipo de atendimento para ver o que preparar antes do horário.
             </p>

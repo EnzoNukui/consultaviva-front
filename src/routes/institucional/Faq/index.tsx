@@ -15,13 +15,13 @@ const perguntas = [
   },
   {
     id: 'ajuda',
-    pergunta: 'O que acontece quando toco em “Preciso de ajuda”?',
+    pergunta: 'Como faço um pedido de ajuda?',
     resposta: 'Você pode informar o que dificulta sua ida e indicar quando conseguiria ser atendido. Depois de enviar o pedido, acompanhe a resposta no portal do paciente.',
   },
   {
     id: 'virtual',
     pergunta: 'A consulta pode virar virtual automaticamente?',
-    resposta: 'Não. Se houver uma proposta de atendimento virtual, você pode aceitá-la ou recusá-la. A modalidade só muda depois da confirmação da proposta.',
+    resposta: 'Não. A modalidade só muda com autorização profissional, seu aceite e a confirmação da equipe.',
   },
   {
     id: 'aplicativo',
@@ -35,8 +35,8 @@ const perguntas = [
   },
   {
     id: 'agenda',
-    pergunta: 'A ConsultaViva lê minha agenda pessoal?',
-    resposta: 'Não. O sistema usa os horários que você informa no pedido de ajuda. Não precisa acessar a agenda do seu celular.',
+    pergunta: 'Preciso conectar a agenda do meu celular?',
+    resposta: 'Não. Informe no pedido os horários em que você pode comparecer. O protótipo não acessa a agenda do seu celular.',
   },
   {
     id: 'prioridade',
@@ -45,8 +45,8 @@ const perguntas = [
   },
   {
     id: 'privacidade',
-    pergunta: 'Como os dados são protegidos?',
-    resposta: 'O protótipo usa dados fictícios de demonstração. Use apenas dados de teste ao explorar a ConsultaViva.',
+    pergunta: 'Posso usar meus dados reais na demonstração?',
+    resposta: 'Não. A demonstração usa dados fictícios. Use apenas informações de teste ao explorar a ConsultaViva.',
   },
 ]
 
@@ -62,10 +62,10 @@ export default function Faq() {
             Perguntas <span className="block text-turquesa-escuro">frequentes</span>
           </h1>
           <p className="mt-4 max-w-xs text-body-large text-azul-profundo/80">
-            O que pacientes, profissionais e avaliadores costumam perguntar sobre a ConsultaViva.
+            Respostas sobre o protótipo, os pedidos de ajuda e o atendimento.
           </p>
           <div className="mt-5">
-            <Botoes texto="Mandar outra pergunta" para="/contato" variante="contornoTurquesa" />
+            <Botoes texto="Fazer outra pergunta" para="/contato" variante="contornoTurquesa" />
           </div>
         </header>
 
