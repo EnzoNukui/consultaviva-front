@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { FiArrowRight, FiMessageSquare, FiPlus } from 'react-icons/fi'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
@@ -28,6 +29,8 @@ export default function SolicitacoesPaciente() {
     const ids = new Set(dados.consultas.filter(({ agendamento, inicio }) =>
       agendamento.statusAgendamento === 'AGENDADO' && inicio > agora,
     ).map(({ agendamento }) => agendamento.idAgendamento))
+    dados.semHorario.filter(({ statusAgendamento }) => statusAgendamento === 'AGENDADO')
+      .forEach(({ idAgendamento }) => ids.add(idAgendamento))
     return carregarOfertasEmAnalise(dados.solicitacoes.filter(({ idAgendamento }) => ids.has(idAgendamento)), opcoes)
   }, [dados, abrindoFormulario])
   const { resultado: resultadoOfertas, tentarNovamente: tentarOfertas } = useBuscaPaciente(buscarOfertas)
@@ -51,8 +54,19 @@ export default function SolicitacoesPaciente() {
     const pedidoExistente = pedidosAtivos.get(Number(consultaDoAtalho))
     if (pedidoExistente) return <Navigate to={`${caminho}/${pedidoExistente.idSolicitacao}`} replace />
 
-    return <FormularioSolicitacao key={consultaDoAtalho ?? 'nova'} consultas={disponiveis}
-      consultaDoAtalho={consultaDoAtalho} aoRecarregarLista={tentarNovamente} />
+    return (
+      <>
+        {dados.semHorario.length > 0 && (
+          <div className="mb-4">
+            <AvisoHorariosIndisponiveis agendamentos={dados.semHorario} tentarNovamente={tentarNovamente} />
+          </div>
+        )}
+        {disponiveis.length === 0 && dados.semHorario.length > 0
+          ? <Botoes texto="Voltar às solicitações" para={caminho} variante="secundario" />
+          : <FormularioSolicitacao key={consultaDoAtalho ?? 'nova'} consultas={disponiveis}
+            consultaDoAtalho={consultaDoAtalho} aoRecarregarLista={tentarNovamente} />}
+      </>
+    )
   }
 
   return (
@@ -66,6 +80,12 @@ export default function SolicitacoesPaciente() {
           <Botoes texto="Pedir ajuda" icone={FiPlus} para={`${caminho}?nova=1`} />
         )}
       </header>
+
+      {dados && dados.semHorario.length > 0 && (
+        <div className="mb-4">
+          <AvisoHorariosIndisponiveis agendamentos={dados.semHorario} tentarNovamente={tentarNovamente} />
+        </div>
+      )}
 
       {resultadoOfertas?.status === 'erro' && (
         <div className="mb-4">

@@ -1,5 +1,5 @@
 import { agendamentoService } from '../../../services/agendamentoService'
-import { carregarHorarios, timestampDaAgenda } from '../../../services/agendaPacienteService'
+import { carregarAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
 import { ApiError } from '../../../services/apiClient'
 import { listarOfertasDaSolicitacao } from '../../../services/propostasDoPaciente'
 import { solicitacaoService } from '../../../services/solicitacaoService'
@@ -44,14 +44,14 @@ export async function carregarSolicitacoesPaciente(opcoes: OpcoesAutenticadas) {
   const solicitacoes = await listarSolicitacoesDosAgendamentos(agendamentos, opcoes)
 
   const idsComPedido = new Set(solicitacoes.map(({ idAgendamento }) => idAgendamento))
-  const consultas = await carregarHorarios(agendamentos.filter(({ idAgendamento, statusAgendamento }) =>
+  const { consultas, semHorario } = await carregarAgenda(agendamentos.filter(({ idAgendamento, statusAgendamento }) =>
     statusAgendamento === 'AGENDADO' || idsComPedido.has(idAgendamento),
   ), opcoes)
 
   solicitacoes.sort((a, b) => Number(solicitacaoAtiva(b)) - Number(solicitacaoAtiva(a))
     || timestampDaAgenda(b.dataAbertura) - timestampDaAgenda(a.dataAbertura))
 
-  return { solicitacoes, consultas }
+  return { solicitacoes, consultas, semHorario }
 }
 
 export async function carregarOfertasEmAnalise(solicitacoes: SolicitacaoAjuda[], opcoes: OpcoesAutenticadas) {

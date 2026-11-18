@@ -2,12 +2,13 @@ import { useCallback } from 'react'
 import { FiArrowLeft, FiCheck, FiChevronRight } from 'react-icons/fi'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import CardConsulta from '../../../components/CardConsulta/CardConsulta'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
 import StatusSolicitacao from '../../../components/StatusSolicitacao/StatusSolicitacao'
-import { agoraNaAgenda, agendaPacienteService } from '../../../services/agendaPacienteService'
+import { agoraNaAgenda, agendaPacienteService, HorarioIndisponivelError } from '../../../services/agendaPacienteService'
 import { ApiError } from '../../../services/apiClient'
 import { solicitacaoService } from '../../../services/solicitacaoService'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
@@ -19,7 +20,12 @@ const modalidades = { PRESENCIAL: 'Presencial', VIRTUAL: 'Virtual', AMBAS: 'Pres
 
 async function carregarDetalhes(id: number, opcoes: OpcoesAutenticadas) {
   const pedido = await solicitacaoService.buscarDoPaciente(id, opcoes)
-  const consulta = await agendaPacienteService.buscarPorId(pedido.idAgendamento, opcoes)
+  const consulta = await agendaPacienteService.buscarPorId(pedido.idAgendamento, opcoes).catch((erro: unknown) => {
+    if (erro instanceof HorarioIndisponivelError) {
+      return { agendamento: erro.agendamento, horario: null, inicio: null, unidade: null }
+    }
+    throw erro
+  })
   const disponibilidades = await solicitacaoService.listarDisponibilidades(id, opcoes)
   const dificuldades = await solicitacaoService.listarDificuldades(id, opcoes)
   const tipos = dificuldades.length > 0 ? await carregarTiposDificuldade(opcoes) : []
@@ -39,6 +45,8 @@ export default function DetalhesSolicitacao() {
   ), [identificador, valido])
   const { resultado, tentarNovamente } = useBuscaPaciente(carregar)
   const dados = resultado?.status === 'sucesso' ? resultado.dados : null
+  const consultaCompleta = dados?.consulta.horario && dados.consulta.inicio !== null
+    ? { ...dados.consulta, horario: dados.consulta.horario, inicio: dados.consulta.inicio } : null
   const indisponivel = resultado?.status === 'erro' && resultado.erro instanceof ApiError
     && (resultado.erro.status === 403 || resultado.erro.status === 404)
 
@@ -73,8 +81,8 @@ export default function DetalhesSolicitacao() {
               </div>
               <p className="mt-1 text-body-small text-azul-profundo/80">Enviada em {dataHoraDaSolicitacao(dados.pedido.dataAbertura)}</p>
               {dados.pedido.dataEncerramento && <p className="text-body-small text-azul-profundo/80">Encerrada em {dataHoraDaSolicitacao(dados.pedido.dataEncerramento)}</p>}
-              {solicitacaoAtiva(dados.pedido) && dados.consulta.agendamento.statusAgendamento === 'AGENDADO'
-                && dados.consulta.inicio > agoraNaAgenda() && (
+              {solicitacaoAtiva(dados.pedido) && consultaCompleta?.agendamento.statusAgendamento === 'AGENDADO'
+                && consultaCompleta.inicio > agoraNaAgenda() && (
                 <p className="mt-4 rounded-md bg-menta px-3 py-2 text-body-small text-turquesa-escuro">Sua consulta permanece marcada enquanto a equipe avalia o pedido.</p>
               )}
 
@@ -107,11 +115,11 @@ export default function DetalhesSolicitacao() {
               </section>
             </section>
 
-            <CardConsulta consulta={dados.consulta} unidade={dados.consulta.unidade} compacto>
+            {consultaCompleta ? <CardConsulta consulta={consultaCompleta} unidade={consultaCompleta.unidade} compacto>
               <div className="flex flex-wrap gap-2">
                 <Botoes texto="Ver consulta" para={`/paciente/consultas/${dados.pedido.idAgendamento}`} icone={FiChevronRight} posicaoIcone="direita" />
               </div>
-            </CardConsulta>
+            </CardConsulta> : <AvisoHorariosIndisponiveis agendamentos={[dados.consulta.agendamento]} tentarNovamente={tentarNovamente} />}
           </div>
         </PropostasDaSolicitacao>
       )}

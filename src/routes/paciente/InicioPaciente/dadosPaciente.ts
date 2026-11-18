@@ -1,4 +1,4 @@
-import { agoraNaAgenda, carregarHorarios } from '../../../services/agendaPacienteService'
+import { agoraNaAgenda, carregarAgenda } from '../../../services/agendaPacienteService'
 import { ofertaVigente } from '../../../services/propostasDoPaciente'
 import { unidadeService } from '../../../services/unidadeService'
 import type { Agendamento } from '../../../types/agendamento'
@@ -7,7 +7,7 @@ import type { SolicitacaoAjuda } from '../../../types/solicitacao'
 import { carregarOfertasEmAnalise } from '../SolicitacoesPaciente/dadosSolicitacoes'
 
 export async function carregarConsultas(agendadas: Agendamento[], opcoes: OpcoesAutenticadas) {
-  const consultas = await carregarHorarios(agendadas, opcoes)
+  const { consultas, semHorario } = await carregarAgenda(agendadas, opcoes)
   const agora = agoraNaAgenda()
 
   const futuras = consultas.filter(({ inicio }) => inicio >= agora).sort((a, b) => a.inicio - b.inicio)
@@ -17,7 +17,7 @@ export async function carregarConsultas(agendadas: Agendamento[], opcoes: Opcoes
     ? await unidadeService.buscarPorId(proxima.horario.idUnidade, opcoes)
     : null
 
-  return { futuras, localProxima: unidade?.nomeUnidade }
+  return { futuras, semHorario, localProxima: unidade?.nomeUnidade }
 }
 
 export async function contarPropostasPendentes(solicitacoes: SolicitacaoAjuda[], opcoes: OpcoesAutenticadas) {

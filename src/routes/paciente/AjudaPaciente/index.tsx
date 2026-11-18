@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { FiArrowRight, FiCalendar, FiClipboard } from 'react-icons/fi'
 import { Link, useSearchParams } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import CardConsulta from '../../../components/CardConsulta/CardConsulta'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
@@ -27,7 +28,8 @@ export default function AjudaPaciente() {
   const [parametros, setParametros] = useSearchParams()
   const { resultado, tentarNovamente } = useBuscaPaciente(agendaPacienteService.listar)
   const agora = agoraNaAgenda()
-  const consultas = resultado?.status === 'sucesso' ? resultado.dados
+  const semHorario = resultado?.status === 'sucesso' ? resultado.dados.semHorario : []
+  const consultas = resultado?.status === 'sucesso' ? resultado.dados.consultas
     .filter(({ agendamento, inicio }) => agendamento.statusAgendamento === 'AGENDADO' && inicio > agora)
     .toSorted((a, b) => a.inicio - b.inicio) : []
   const idNaUrl = parametros.get('consulta')
@@ -46,7 +48,8 @@ export default function AjudaPaciente() {
         <div className="min-w-0 space-y-4">
           {resultado === null && <LoadingState mensagem="Carregando suas próximas consultas…" />}
           {resultado?.status === 'erro' && <ErrorState mensagem="Não foi possível carregar suas consultas." tentarNovamente={tentarNovamente} />}
-          {resultado?.status === 'sucesso' && consultas.length === 0 && (
+          {semHorario.length > 0 && <AvisoHorariosIndisponiveis agendamentos={semHorario} tentarNovamente={tentarNovamente} />}
+          {resultado?.status === 'sucesso' && consultas.length === 0 && semHorario.length === 0 && (
             <EmptyState titulo="Você não tem consultas futuras" mensagem="Você pode pedir ajuda quando tiver uma consulta marcada."
               acao={<Botoes texto="Ver minhas consultas" icone={FiCalendar} para="/paciente/consultas" />} />
           )}
