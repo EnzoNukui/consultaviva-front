@@ -8,6 +8,7 @@ export const linksInstitucionais = [
   { texto: "Home", caminho: "/" },
   { texto: "Sobre", caminho: "/sobre" },
   { texto: "Solução", caminho: "/solucao" },
+  { texto: "Jornada", caminho: "/jornada" },
   { texto: "Integrantes", caminho: "/integrantes" },
   { texto: "FAQ", caminho: "/faq" },
   { texto: "Contato", caminho: "/contato" },
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/solucao",
         lazy: carregar(() => import("./institucional/Solucao")),
+      },
+      {
+        path: "/jornada",
+        lazy: carregar(() => import("./institucional/JornadaConsultaViva")),
       },
       {
         path: "/integrantes",
