@@ -2,10 +2,13 @@ interface LoadingStateProps {
   mensagem?: string
 }
 
-export default function LoadingState({ mensagem = 'Carregando…' }: LoadingStateProps) {
+export default function LoadingState({
+  mensagem = 'Carregando…',
+}: LoadingStateProps) {
   return (
     <div
       role="status"
+      aria-live="polite"
       className="flex items-center justify-center gap-3 rounded-2xl border border-azul-profundo/10 bg-superficie px-5 py-8 text-body-small font-medium"
     >
       <span
