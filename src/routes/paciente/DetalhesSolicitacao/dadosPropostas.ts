@@ -1,5 +1,4 @@
 import { timestampDaAgenda } from '../../../services/agendaPacienteService'
-import type { ConsultaComHorario } from '../../../services/agendaPacienteService'
 import { ApiError } from '../../../services/apiClient'
 import { horarioService } from '../../../services/horarioService'
 import { listarOfertasDaSolicitacao, ofertaVigente, prazoDaOferta } from '../../../services/propostasDoPaciente'
@@ -14,6 +13,12 @@ import type { Unidade } from '../../../types/unidade'
 export interface HorarioDaProposta {
   horario: HorarioAtendimento | null
   modalidade: ModalidadeAtendimento
+  unidade: Unidade | null
+}
+
+export interface ConsultaParaPropostas {
+  agendamento: Agendamento
+  horario: HorarioAtendimento | null
   unidade: Unidade | null
 }
 
@@ -57,14 +62,14 @@ function dadoOpcional<T>(requisicao: Promise<T>) {
 
 export async function carregarPropostasDaSolicitacao(
   pedido: SolicitacaoAjuda,
-  consulta: ConsultaComHorario & { unidade: Unidade | null },
+  consulta: ConsultaParaPropostas,
   opcoes: OpcoesAutenticadas,
 ) {
   const { agendamento, horario, unidade } = consulta
   const ofertas = await listarOfertasDaSolicitacao(pedido.idSolicitacao, opcoes)
   const idsHorarios = new Set(ofertas.map((proposta) => proposta.idHorario))
-  idsHorarios.delete(horario.idHorario)
-  const horarios = new Map<number, HorarioAtendimento | null>([[horario.idHorario, horario]])
+  idsHorarios.delete(agendamento.idHorario)
+  const horarios = new Map<number, HorarioAtendimento | null>([[agendamento.idHorario, horario]])
   for (const id of idsHorarios) {
     opcoes.signal?.throwIfAborted()
     horarios.set(id, await dadoOpcional(horarioService.buscarPorId(id, opcoes)))
@@ -77,7 +82,7 @@ export async function carregarPropostasDaSolicitacao(
   }
 
   const unidades = new Map<number, Unidade | null>()
-  if (agendamento.modalidade === 'PRESENCIAL') {
+  if (agendamento.modalidade === 'PRESENCIAL' && horario) {
     unidades.set(horario.idUnidade, unidade)
     idsUnidades.delete(horario.idUnidade)
   }

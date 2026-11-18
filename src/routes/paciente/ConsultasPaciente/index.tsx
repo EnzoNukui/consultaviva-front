@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FiCalendar, FiCheck, FiChevronRight } from 'react-icons/fi'
 import { useSearchParams } from 'react-router-dom'
 import Botoes from '../../../components/Botoes/Botoes'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import CardConsulta from '../../../components/CardConsulta/CardConsulta'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
@@ -48,7 +49,8 @@ function ListaConsultas({ filtro, agendamentoConcluido, aoAbrirAgenda, aoFiltrar
   const { resultado, tentarNovamente } = useBuscaPaciente(agendaPacienteService.listar)
   const periodoNaUrl = filtro === 'historico' ? '?periodo=historico' : ''
   const linkAgenda = `/paciente/consultas?agendar=1${filtro === 'historico' ? '&periodo=historico' : ''}`
-  const consultas = resultado?.status === 'sucesso' ? resultado.dados : []
+  const consultas = resultado?.status === 'sucesso' ? resultado.dados.consultas : []
+  const semHorario = resultado?.status === 'sucesso' ? resultado.dados.semHorario : []
   const agora = agoraNaAgenda()
   const proximas = consultas.filter(({ agendamento, inicio }) =>
     agendamento.statusAgendamento === 'AGENDADO' && inicio >= agora,
@@ -85,6 +87,12 @@ function ListaConsultas({ filtro, agendamentoConcluido, aoAbrirAgenda, aoFiltrar
         </div>
       )}
 
+      {semHorario.length > 0 && (
+        <div className="mb-5">
+          <AvisoHorariosIndisponiveis agendamentos={semHorario} tentarNovamente={tentarNovamente} />
+        </div>
+      )}
+
       {resultado === null ? (
         <LoadingState mensagem="Carregando suas consultas…" />
       ) : resultado.status === 'erro' ? (
@@ -101,6 +109,7 @@ function ListaConsultas({ filtro, agendamentoConcluido, aoAbrirAgenda, aoFiltrar
                 </div>
               ))}
             </dl>
+            {semHorario.length > 0 && <p className="mt-3 text-caption text-superficie/80">O resumo considera apenas as consultas com horário disponível.</p>}
           </aside>
 
           <section aria-label="Lista de consultas" className="min-w-0 lg:col-start-1 lg:row-start-1">
@@ -135,8 +144,8 @@ function ListaConsultas({ filtro, agendamentoConcluido, aoAbrirAgenda, aoFiltrar
               </ul>
             ) : (
               <EmptyState
-                titulo={mostrandoProximas ? 'Você não tem consultas futuras' : 'Seu histórico está vazio'}
-                mensagem={mostrandoProximas
+                titulo={semHorario.length > 0 ? 'Nenhuma outra consulta neste período' : mostrandoProximas ? 'Você não tem consultas futuras' : 'Seu histórico está vazio'}
+                mensagem={semHorario.length > 0 ? 'As consultas com horário indisponível estão indicadas acima.' : mostrandoProximas
                   ? 'Quando uma consulta for agendada, ela aparecerá aqui.'
                   : 'As consultas anteriores e canceladas aparecerão aqui.'}
               />

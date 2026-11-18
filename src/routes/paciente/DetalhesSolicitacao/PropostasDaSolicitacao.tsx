@@ -7,22 +7,20 @@ import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
 import { useSessao } from '../../../components/SessaoProvider/sessao'
 import { agoraNaAgenda, timestampDaAgenda } from '../../../services/agendaPacienteService'
-import type { ConsultaComHorario } from '../../../services/agendaPacienteService'
 import { ApiError } from '../../../services/apiClient'
 import { prazoDaOferta } from '../../../services/propostasDoPaciente'
 import { propostaService } from '../../../services/propostaService'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
 import type { SolicitacaoAjuda } from '../../../types/solicitacao'
-import type { Unidade } from '../../../types/unidade'
 import { solicitacaoAtiva } from '../SolicitacoesPaciente/dadosSolicitacoes'
 import { useBuscaPaciente } from '../useBuscaPaciente'
 import CardProposta from './CardProposta'
 import { carregarPropostasDaSolicitacao, formatarDataHoraProposta, situacaoDaOferta } from './dadosPropostas'
-import type { PropostaDoPaciente, SituacaoOferta } from './dadosPropostas'
+import type { ConsultaParaPropostas, PropostaDoPaciente, SituacaoOferta } from './dadosPropostas'
 
 export default function PropostasDaSolicitacao({ pedido, consulta, children }: {
   pedido: SolicitacaoAjuda
-  consulta: ConsultaComHorario & { unidade: Unidade | null }
+  consulta: ConsultaParaPropostas
   children: ReactNode
 }) {
   const { hash } = useLocation()

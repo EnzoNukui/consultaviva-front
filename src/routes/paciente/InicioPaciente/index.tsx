@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiCalendar, FiChevronRight, FiInfo, FiMapPin, FiShuffle } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import AcoesConsultaPaciente from '../../../components/AcoesConsultaPaciente/AcoesConsultaPaciente'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import Botoes from '../../../components/Botoes/Botoes'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
@@ -60,6 +61,7 @@ export default function InicioPaciente() {
   const autorizacao = sessao?.autorizacao
   const [consultas, setConsultas] = useState<{
     futuras: ConsultaComHorario[]
+    semHorario: Agendamento[]
     localProxima?: string
   } | null>(null)
   const [pedidoDaProxima, setPedidoDaProxima] = useState<SolicitacaoAjuda | null>(null)
@@ -91,7 +93,9 @@ export default function InicioPaciente() {
       setConsultas(dados)
 
       try {
-        const pedidos = await listarSolicitacoesDosAgendamentos(dados.futuras.map(({ agendamento }) => agendamento), opcoes)
+        const pedidos = await listarSolicitacoesDosAgendamentos([
+          ...dados.futuras.map(({ agendamento }) => agendamento), ...dados.semHorario,
+        ], opcoes)
         if (controle.signal.aborted) return
         const idProxima = dados.futuras[0]?.agendamento.idAgendamento
         setPedidoDaProxima(pedidos.find((pedido) => pedido.idAgendamento === idProxima && solicitacaoAtiva(pedido)) ?? null)
@@ -106,6 +110,7 @@ export default function InicioPaciente() {
   }, [autorizacao, definirSessao, tentativa])
 
   function tentarNovamente() {
+    setConsultas(null)
     setErro(false)
     setErroPendencias(false)
     setTentativa((atual) => atual + 1)
@@ -168,12 +173,17 @@ export default function InicioPaciente() {
                 detalhes={detalheProxima} aoConfirmar={confirmarNaAgenda} />
             </div>
           </div>
-        ) : (
+        ) : consultas.semHorario.length === 0 ? (
           <EmptyState
             titulo="Você não tem consultas futuras"
             mensagem="Explore a escolha de unidade e horário na agenda de demonstração do ConsultaViva."
             acao={<Botoes texto="Ver agenda de demonstração" para="/paciente/consultas?agendar=1" icone={FiCalendar} />}
           />
+        ) : null}
+        {!erro && consultas && consultas.semHorario.length > 0 && (
+          <div className={proxima ? 'mt-4' : undefined}>
+            <AvisoHorariosIndisponiveis agendamentos={consultas.semHorario} tentarNovamente={tentarNovamente} />
+          </div>
         )}
       </section>
 
@@ -222,7 +232,9 @@ export default function InicioPaciente() {
               ))}
             </ul>
           ) : (
-            <p className="text-body-small text-azul-profundo/80">Você não tem outras consultas futuras.</p>
+            <p className="text-body-small text-azul-profundo/80">{consultas?.semHorario.length
+              ? 'As demais consultas com horário indisponível estão indicadas acima.'
+              : 'Você não tem outras consultas futuras.'}</p>
           )}
         </section>
       )}

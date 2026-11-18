@@ -2,11 +2,12 @@ import { useCallback, useState } from 'react'
 import { FiArrowLeft, FiClock, FiMapPin, FiVideo } from 'react-icons/fi'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import AcoesConsultaPaciente from '../../../components/AcoesConsultaPaciente/AcoesConsultaPaciente'
+import AvisoHorariosIndisponiveis from '../../../components/AvisoHorariosIndisponiveis/AvisoHorariosIndisponiveis'
 import { estadoDaConsulta } from '../../../components/CardConsulta/estadoDaConsulta'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import ErrorState from '../../../components/ErrorState/ErrorState'
 import LoadingState from '../../../components/LoadingState/LoadingState'
-import { agoraNaAgenda, agendaPacienteService } from '../../../services/agendaPacienteService'
+import { agoraNaAgenda, agendaPacienteService, HorarioIndisponivelError } from '../../../services/agendaPacienteService'
 import { ApiError } from '../../../services/apiClient'
 import type { Agendamento } from '../../../types/agendamento'
 import type { OpcoesAutenticadas } from '../../../types/autenticacao'
@@ -65,7 +66,9 @@ export default function DetalhesConsulta() {
         <h1 className="text-h1">Detalhes da consulta</h1>
       </header>
 
-      {!idValido || indisponivel ? (
+      {resultado?.status === 'erro' && resultado.erro instanceof HorarioIndisponivelError ? (
+        <AvisoHorariosIndisponiveis agendamentos={[resultado.erro.agendamento]} tentarNovamente={tentarNovamente} />
+      ) : !idValido || indisponivel ? (
         <EmptyState titulo="Consulta indisponível" mensagem="Volte à lista e escolha uma consulta da sua agenda." />
       ) : resultado === null ? (
         <LoadingState mensagem="Carregando os detalhes da consulta…" />
