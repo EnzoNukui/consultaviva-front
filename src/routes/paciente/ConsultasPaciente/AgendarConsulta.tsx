@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
-import { FiArrowLeft, FiCalendar, FiChevronRight, FiClock, FiMapPin, FiSearch } from 'react-icons/fi'
+import { FiArrowLeft, FiCalendar, FiChevronRight, FiClock, FiInfo, FiMapPin, FiSearch } from 'react-icons/fi'
 import Botoes from '../../../components/Botoes/Botoes'
 import CalendarioAgenda from '../../../components/CalendarioAgenda/CalendarioAgenda'
 import EmptyState from '../../../components/EmptyState/EmptyState'
@@ -174,6 +174,17 @@ export default function AgendarConsulta({ aoAgendar, aoCancelar }: AgendarConsul
       </button>
       <h1 className="text-h1">Agendar consulta</h1>
       <p className="mt-2 text-body-small text-azul-profundo/80">Escolha uma unidade, selecione um dia e horário, e confirme sua consulta presencial.</p>
+      <aside aria-label="Agenda de demonstração" className="mt-4 flex items-start gap-3 rounded-lg border border-turquesa-escuro/15 bg-menta/50 px-4 py-3">
+        <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-superficie text-turquesa-escuro">
+          <FiInfo aria-hidden="true" className="size-4" />
+        </span>
+        <span className="min-w-0">
+          <strong className="block text-caption font-bold text-turquesa-escuro">Agenda de demonstração</strong>
+          <span className="mt-0.5 block text-caption leading-relaxed text-azul-profundo/80">
+            Os horários não são vagas oficiais do SUS. Agendamentos aqui não alteram consultas reais nem a fila.
+          </span>
+        </span>
+      </aside>
 
       <div className="mt-6">
         {erroAgendamento && (

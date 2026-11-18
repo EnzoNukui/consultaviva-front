@@ -1,5 +1,5 @@
 import {
-  FiArrowDown, FiArrowRight, FiCalendar, FiCheck, FiChevronRight,
+  FiArrowRight, FiCalendar, FiCheck, FiChevronRight,
   FiClipboard, FiHelpCircle, FiHome,
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
@@ -45,7 +45,7 @@ const itensPreparo = [
     pergunta: 'Se eu não puder ir?',
     resposta: (
       <>
-        <p>Abra a consulta no portal e toque em Preciso de ajuda. Conte o que dificulta sua ida e informe em quais horários você pode comparecer.</p>
+        <p>Abra a consulta no portal e selecione “Preciso de ajuda”. Conte o que está dificultando seu comparecimento e informe quando você pode ir.</p>
         <Link
           to="/acesso"
           className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -86,14 +86,23 @@ export default function Home() {
       >
         <div className="mx-auto w-full max-w-7xl px-5 pt-16 pb-8 sm:px-8 sm:pt-20 lg:py-24">
           <div className="relative z-10 lg:w-[48%]">
+            <p className="mb-5 inline-flex rounded-full border border-azul-profundo/10 bg-superficie/70 px-4 py-2 text-caption font-semibold text-turquesa-escuro">
+              Demonstração com dados fictícios
+            </p>
             <h1 id="titulo-home" className="max-w-[14ch] text-display">
               Da consulta marcada ao atendimento realizado.
             </h1>
             <p className="mt-6 max-w-sm text-body-large text-azul-profundo/80">
               Peça ajuda se algo dificultar sua ida à consulta.
             </p>
-            <div className="mt-8">
-              <Botoes texto="Ver como funciona" para="#como-funciona" icone={FiArrowDown} tamanho="grande" />
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Botoes texto="Ver a jornada" para="/jornada" icone={FiArrowRight} posicaoIcone="direita" tamanho="grande" />
+              <Link
+                to="/solucao"
+                className="inline-flex min-h-11 items-center rounded-sm font-bold text-turquesa-escuro underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+              >
+                Conheça a solução
+              </Link>
             </div>
             <p className="mt-6 text-body-small">
               Já tem uma consulta?{' '}
@@ -160,8 +169,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-5 pb-20 text-center sm:px-8 lg:pb-28">
           <div className="border-t border-azul-profundo/10 pt-20 lg:pt-28">
             <h2 id="titulo-caminho" className="text-display">
-              Marcar é só o começo.
-              <span className="block text-turquesa-escuro">O difícil é chegar.</span>
+              Marcar a consulta é o primeiro passo.
+              <span className="block text-turquesa-escuro">Chegar até ela também pode ser difícil.</span>
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-body-large text-azul-profundo/80">
               Transporte, trabalho e imprevistos fazem parte da rotina.
@@ -298,7 +307,7 @@ export default function Home() {
       >
         <div className="mx-auto w-full max-w-7xl px-5 pt-16 pb-10 sm:px-8 sm:pt-20 lg:py-24">
           <div className="relative z-10 max-w-xl lg:w-[47%]">
-            <h2 id="titulo-preparo" className="max-w-[14ch] text-display">Prepare-se para a consulta.</h2>
+            <h2 id="titulo-preparo" className="max-w-[14ch] text-display">Prepare-se para a consulta</h2>
             <p className="mt-5 max-w-md text-body-large text-azul-profundo/80">
               Escolha seu tipo de atendimento para ver o que preparar antes do horário.
             </p>

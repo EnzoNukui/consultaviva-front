@@ -199,6 +199,8 @@ function SolicitacaoNaFila({ item, iniciando, aoIniciar }: {
   const nome = paciente?.trim() || (idPaciente ? `Paciente #${idPaciente}` : 'Paciente indisponível')
   const situacao = grupo === 'aceitas' ? 'Aceite recebido' : grupo === 'abertas' ? 'Aguardando análise'
     : aguardandoResposta ? 'Aguardando o paciente' : 'Em análise'
+  const proximaAcao = grupo === 'aceitas' ? 'Próximo passo: confirmar a proposta'
+    : grupo === 'abertas' && consultaAtiva ? 'Próximo passo: iniciar análise' : ''
 
   return (
     <details className="group">
@@ -218,9 +220,18 @@ function SolicitacaoNaFila({ item, iniciando, aoIniciar }: {
             </p>
           )}
         </div>
-        <span className={`col-start-1 w-fit rounded-md px-2 py-1 text-caption font-bold sm:col-start-auto ${grupo === 'abertas' ? 'bg-areia text-azul-profundo' : 'bg-menta text-turquesa-escuro'}`}>
-          {situacao}
-        </span>
+        <div className="col-start-1 min-w-0 sm:col-start-auto">
+          <span className={`block w-fit rounded-md px-2 py-1 text-caption font-bold ${grupo === 'abertas' ? 'bg-areia text-azul-profundo' : 'bg-menta text-turquesa-escuro'}`}>
+            {situacao}
+          </span>
+          {proximaAcao && <p className="mt-1 text-caption text-azul-profundo/75">{proximaAcao}</p>}
+          {prazo !== null && (
+            <p className="mt-1 flex items-start gap-1 text-caption font-semibold text-turquesa-escuro">
+              <FiClock aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+              Vaga reservada até {formatoData.format(prazo)}
+            </p>
+          )}
+        </div>
         <FiChevronDown aria-hidden="true" className="col-start-2 row-start-1 size-5 shrink-0 text-turquesa-escuro group-open:rotate-180 sm:col-start-auto sm:row-start-auto" />
       </summary>
       <div className="space-y-3 border-t border-azul-profundo/10 px-4 py-4">

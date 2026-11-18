@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FiCalendar, FiChevronRight, FiMapPin, FiShuffle } from 'react-icons/fi'
+import { FiCalendar, FiChevronRight, FiInfo, FiMapPin, FiShuffle } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import AcoesConsultaPaciente from '../../../components/AcoesConsultaPaciente/AcoesConsultaPaciente'
 import Botoes from '../../../components/Botoes/Botoes'
@@ -38,6 +38,21 @@ function dataDaConsulta(dataInicio: string) {
   const data = timestampDaAgenda(dataInicio)
   const dia = formatoData.format(data)
   return `${dia[0].toUpperCase()}${dia.slice(1)}, às ${formatoHora.format(data).replace(':00', 'h').replace(':', 'h')}`
+}
+
+function orientacaoDaConsulta(agendamento: Agendamento, pedidoAtivo: boolean) {
+  if (pedidoAtivo) return 'A consulta segue marcada enquanto a equipe analisa seu pedido.'
+
+  switch (agendamento.statusRespostaPaciente) {
+    case 'SEM_RESPOSTA':
+      return 'Confirme presença ou peça ajuda se algo dificultar sua ida.'
+    case 'VOU_COMPARECER':
+      return 'Presença confirmada. Confira data e local antes do dia.'
+    case 'PRECISO_DE_AJUDA':
+      return 'Acompanhe seu pedido no menu Solicitações.'
+    case 'NAO_CONSIGO_COMPARECER':
+      return 'A equipe ainda precisa confirmar qualquer mudança na consulta.'
+  }
 }
 
 export default function InicioPaciente() {
@@ -108,6 +123,7 @@ export default function InicioPaciente() {
   const [proxima, ...outras] = consultas?.futuras ?? []
   const detalheProxima = proxima ? `/paciente/consultas/${proxima.agendamento.idAgendamento}` : ''
   const pedidoAtivo = proxima && pedidoDaProxima?.idAgendamento === proxima.agendamento.idAgendamento ? pedidoDaProxima : null
+  const orientacaoProxima = proxima ? orientacaoDaConsulta(proxima.agendamento, Boolean(pedidoAtivo)) : ''
   const solicitacoes = '/paciente/solicitacoes'
   const destinoPendencias = pendencias.idsSolicitacao.length === 1
     ? `${solicitacoes}/${pendencias.idsSolicitacao[0]}#propostas` : solicitacoes
@@ -142,6 +158,12 @@ export default function InicioPaciente() {
               </p>
             </div>
             <div className="border-t border-azul-profundo/10 bg-fundo/60 px-4 py-3 sm:px-6">
+              {orientacaoProxima && (
+                <p className="mb-3 flex items-start gap-2 text-caption leading-relaxed text-azul-profundo/75">
+                  <FiInfo aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-turquesa-escuro" />
+                  <span>{orientacaoProxima}</span>
+                </p>
+              )}
               <AcoesConsultaPaciente key={proxima.agendamento.idAgendamento} consulta={proxima} pedido={pedidoAtivo}
                 detalhes={detalheProxima} aoConfirmar={confirmarNaAgenda} />
             </div>
@@ -149,8 +171,8 @@ export default function InicioPaciente() {
         ) : (
           <EmptyState
             titulo="Você não tem consultas futuras"
-            mensagem="Escolha uma unidade e um horário disponível para marcar sua próxima consulta."
-            acao={<Botoes texto="Agendar consulta" para="/paciente/consultas?agendar=1" icone={FiCalendar} />}
+            mensagem="Explore a escolha de unidade e horário na agenda de demonstração do ConsultaViva."
+            acao={<Botoes texto="Ver agenda de demonstração" para="/paciente/consultas?agendar=1" icone={FiCalendar} />}
           />
         )}
       </section>
