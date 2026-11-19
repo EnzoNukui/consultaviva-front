@@ -5,9 +5,7 @@ import type {
 } from '../types/demas'
 import { executarFetch } from './apiClient'
 
-const DEMAS_API_URL = (
-  import.meta.env.VITE_DEMAS_API_URL?.trim() || 'https://apidadosabertos.saude.gov.br'
-).replace(/\/+$/, '')
+const DEMAS_API_URL = '/api/demas'
 const TEMPO_LIMITE_DEMAS_MS = 30_000
 
 function consultar<T>(caminho: string, signal?: AbortSignal) {

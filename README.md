@@ -250,9 +250,9 @@ A equipe visualiza informações da agenda, acompanha solicitações, administra
 
 | Tecnologia | Utilização |
 | :--- | :--- |
-| **React 19** | Construção das páginas e dos componentes. |
+| **React 19.3.1** | Construção das páginas e dos componentes. |
 | **TypeScript 7** | Tipagem e organização do código. |
-| **Vite 8** | Servidor de desenvolvimento e build de produção. |
+| **Vite 8.3.8** | Servidor de desenvolvimento e build de produção. |
 | **React Router 7** | Navegação e carregamento sob demanda das rotas. |
 | **Tailwind CSS 4** | Estilos, componentes responsivos e identidade visual. |
 | **React Icons** | Ícones de interface. |
@@ -265,13 +265,16 @@ flowchart LR
     P[Paciente] --> F[Front-end React + TypeScript]
     E[Equipe] --> F
     F --> J[API Java - Render]
-    F --> D[Dados abertos - DEMAS]
+    F --> PX[Proxy /api/demas - Vite ou Vercel]
+    PX --> D[Dados abertos - DEMAS]
 ```
 
 O front-end deste repositório consome uma **API Java separada**, configurada por `VITE_API_URL`, e utiliza a **API de dados abertos do Ministério da Saúde (DEMAS)** para consultar informações sobre estabelecimentos de saúde. Os dados de demonstração de consultas não correspondem a agendas reais do SUS.
 
 - **API Java:** https://consultaviva-java.onrender.com/
 - **API pública DEMAS:** https://apidadosabertos.saude.gov.br/
+
+As consultas à DEMAS passam por `/api/demas` no mesmo domínio do front-end. O proxy está configurado no `vite.config.ts` para desenvolvimento e preview, e no `vercel.json` para a hospedagem. Assim, o navegador não depende de a API externa liberar CORS. Não é necessário cadastrar `VITE_DEMAS_API_URL`; valores antigos dessa variável são ignorados pelo código.
 
 O cliente HTTP aceita um limite de espera de **4 minutos para a API Java** e de **30 segundos para consultas ao DEMAS**. Uma primeira requisição ao serviço hospedado no Render pode demorar quando ele esteve inativo.
 
@@ -308,13 +311,13 @@ O modelo de configuração contém:
 
 ```dotenv
 VITE_API_URL=https://consultaviva-java.onrender.com
-VITE_DEMAS_API_URL=https://apidadosabertos.saude.gov.br
 ```
 
 | Variável | Obrigatória? | Finalidade |
 | :--- | :---: | :--- |
 | `VITE_API_URL` | Sim | Endereço-base da API Java. |
-| `VITE_DEMAS_API_URL` | Não | API DEMAS; se omitida, o código usa `https://apidadosabertos.saude.gov.br`. |
+
+React, React DOM, Vite e o plugin do React estão fixados nas versões usadas pelo projeto. Mantenha o `package-lock.json` no repositório para que `npm install` instale a configuração da entrega.
 
 ### 3. Iniciar a aplicação
 

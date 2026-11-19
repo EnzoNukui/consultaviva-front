@@ -2,6 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/api/demas/:caminho*",
+      "destination": "https://apidadosabertos.saude.gov.br/:caminho*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
